@@ -4,8 +4,7 @@
 
 import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useUser } from '@/hooks/useUser';
-
+import { useUser } from '@/hook/useUser';
 export default function UserPage() {
   const params = useParams();
   const router = useRouter();
