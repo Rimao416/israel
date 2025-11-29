@@ -250,11 +250,15 @@ export default function DresscodeSection() {
                 whileTap={{ scale: 0.98 }}
               >
                 {/* Image */}
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
+                <motion.img
+  src={item.image}
+  alt={item.title}
+  className="w-full h-full object-cover"
+  initial={{ scale: 1.2 }}
+  animate={{ scale: 1 }}
+  transition={{ duration: 0.6 }}
+/>
+
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-linear-to-t from-[#34453D] via-[#34453D]/60 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
                 {/* Content */}

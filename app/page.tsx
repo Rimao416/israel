@@ -378,7 +378,7 @@ export default function Hero() {
               {/* Arch background */}
               <div className="absolute inset-0 bg-gradient-to-b from-[#4a5f54] to-[#3d5248] rounded-t-full rounded-b-3xl shadow-2xl p-5">
                 <div className="w-full h-full bg-[#e8dcc4] rounded-t-full rounded-b-2xl overflow-hidden shadow-inner">
-                  <img
+                  <motion.img
                     src="/main.jpg"
                     alt="Cérémonie de mariage"
                     className="w-full h-full object-cover"
