@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Heart, Sparkles, Check, Wine } from 'lucide-react';
 
 export default function DrinksSection() {
-  const [selectedDrinks, setSelectedDrinks] = useState([]);
+  const [selectedDrinks, setSelectedDrinks] = useState<string[]>([]);
 
   const drinks = [
     { id: 'coca', name: 'Coca-Cola', color: '#c9a961', icon: '🥤' },
@@ -13,9 +13,9 @@ export default function DrinksSection() {
     { id: 'jus', name: 'Jus de Fruit', color: '#c9a961', icon: '🧃' }
   ];
 
-  const toggleDrink = (drinkId) => {
-    setSelectedDrinks(prev => 
-      prev.includes(drinkId) 
+  const toggleDrink = (drinkId: string) => {
+    setSelectedDrinks(prev =>
+      prev.includes(drinkId)
         ? prev.filter(id => id !== drinkId)
         : [...prev, drinkId]
     );
@@ -199,7 +199,7 @@ export default function DrinksSection() {
         >
           {drinks.map((drink, index) => {
             const isSelected = selectedDrinks.includes(drink.id);
-            
+           
             return (
               <motion.button
                 key={drink.id}
@@ -323,7 +323,7 @@ export default function DrinksSection() {
           <motion.div
             className="inline-flex items-center gap-3 bg-[#3d5248]/60 backdrop-blur-sm border border-[#c9a961]/30 rounded-full px-8 py-4"
             animate={{
-              boxShadow: selectedDrinks.length > 0 
+              boxShadow: selectedDrinks.length > 0
                 ? [
                     '0 0 20px rgba(201, 169, 97, 0.2)',
                     '0 0 30px rgba(201, 169, 97, 0.4)',
@@ -336,13 +336,13 @@ export default function DrinksSection() {
               repeat: Infinity
             }}
           >
-            <Heart 
-              size={20} 
-              className={selectedDrinks.length > 0 ? 'text-[#c9a961]' : 'text-[#e8dcc4]/50'} 
+            <Heart
+              size={20}
+              className={selectedDrinks.length > 0 ? 'text-[#c9a961]' : 'text-[#e8dcc4]/50'}
               fill={selectedDrinks.length > 0 ? 'currentColor' : 'none'}
             />
             <span className="text-[#e8dcc4] font-light">
-              {selectedDrinks.length === 0 
+              {selectedDrinks.length === 0
                 ? 'Aucune boisson sélectionnée'
                 : selectedDrinks.length === 1
                 ? '1 boisson sélectionnée'
