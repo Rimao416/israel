@@ -2,6 +2,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, ArrowRight, ChevronDown, Sparkles, Heart } from 'lucide-react';
+import PhotosSection from './components/PhotoSection';
+import RSVPSection from './components/RSVP';
+import DrinksSection from './components/Boissons';
+import GuestbookSection from './components/GuestbookSection';
 
 export default function Hero() {
   // Generate random positions once during component initialization with useState
@@ -23,6 +27,7 @@ export default function Hero() {
   );
 
   return (
+    <>
     <div className="h-screen w-screen bg-[#34453D] relative overflow-hidden font-['Montserrat']">
       {/* Animated Dark Gradient Orbs */}
       <motion.div
@@ -165,73 +170,106 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.6 }}
+              className="mb-6"
             >
-              <h1 className="text-[#e8dcc4] font-light leading-[1.1]">
+              <motion.h1 
+                className="text-[#e8dcc4] font-light text-3xl lg:text-4xl xl:text-5xl flex items-center gap-3 mb-3"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.8 }}
+              >
                 <motion.span
-                  className="block text-5xl lg:text-6xl xl:text-7xl mb-1"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  whileHover={{ x: 10, color: '#c9a961' }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
+                  animate={{ 
+                    textShadow: [
+                      '0 0 20px rgba(201, 169, 97, 0.3)',
+                      '0 0 30px rgba(201, 169, 97, 0.5)',
+                      '0 0 20px rgba(201, 169, 97, 0.3)'
+                    ]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 >
-                  WHERE LOVE
+                  Israël
+                </motion.span>
+                <motion.span 
+                  className="text-[#c9a961]"
+                  animate={{ 
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                >
+                  <Heart size={28} fill="currentColor" className="inline-block" />
                 </motion.span>
                 <motion.span
-                  className="block text-5xl lg:text-6xl xl:text-7xl mb-1"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  whileHover={{ x: 10, color: '#c9a961' }}
-                  transition={{ duration: 0.8, delay: 1 }}
+                  animate={{ 
+                    textShadow: [
+                      '0 0 20px rgba(201, 169, 97, 0.3)',
+                      '0 0 30px rgba(201, 169, 97, 0.5)',
+                      '0 0 20px rgba(201, 169, 97, 0.3)'
+                    ]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
                 >
-                  STORIES
+                  Justesse
                 </motion.span>
-                <motion.span
-                  className="block text-5xl lg:text-6xl xl:text-7xl text-[#c9a961]"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  whileHover={{ scale: 1.05, textShadow: '0 0 20px rgba(201, 169, 97, 0.5)' }}
-                  transition={{ duration: 0.8, delay: 1.2 }}
-                >
-                  TAKE FLIGHT
-                </motion.span>
-              </h1>
+              </motion.h1>
+              <motion.p
+                className="text-[#c9a961] text-xl lg:text-2xl font-light italic tracking-wide"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 1.2 }}
+              >
+                Unissent leurs cœurs
+              </motion.p>
             </motion.div>
 
             <motion.p
-              className="text-[#b8c4b8] text-sm lg:text-base leading-relaxed max-w-xl font-light"
+              className="text-[#b8c4b8] text-base lg:text-lg leading-relaxed max-w-xl font-light"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1.4 }}
             >
-              RIASIN Weddings is more than just wedding planning; it's about crafting unforgettable experiences that become the cherished memories forming the foundation of a love story. We believe your wedding is not just a celebration; it's the foundation of a lifetime together.
+              Deux âmes qui se sont trouvées, deux cœurs qui battent à l{"'"}unisson. 
+              Avec une infinie tendresse et une joie débordante, nous vous invitons à célébrer 
+              notre amour et à partager le plus beau jour de notre vie.
+            </motion.p>
+
+            <motion.p
+              className="text-[#c9a961]/70 text-sm lg:text-base italic font-light"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.6 }}
+            >
+              Votre présence sera notre plus précieux cadeau.
             </motion.p>
 
             <motion.div
-              className="flex flex-wrap gap-4 pt-2"
+              className="flex flex-wrap gap-4 pt-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.6 }}
+              transition={{ duration: 1, delay: 1.8 }}
             >
               <motion.button
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 20px 60px rgba(201, 169, 97, 0.4)",
+                  boxShadow: "0 20px 60px rgba(201, 169, 97, 0.5)",
                   y: -2
                 }}
                 whileTap={{ scale: 0.98 }}
                 animate={{
                   boxShadow: [
                     '0 10px 30px rgba(201, 169, 97, 0.2)',
-                    '0 15px 40px rgba(201, 169, 97, 0.3)',
+                    '0 15px 40px rgba(201, 169, 97, 0.35)',
                     '0 10px 30px rgba(201, 169, 97, 0.2)',
                   ]
                 }}
                 transition={{
                   boxShadow: { duration: 2, repeat: Infinity }
                 }}
-                className="group px-8 py-3.5 bg-[#c9a961] text-[#34453D] font-medium text-sm rounded-full flex items-center gap-2.5 transition-all duration-300"
+                className="group px-8 py-4 bg-[#c9a961] text-[#34453D] font-medium text-sm rounded-full flex items-center gap-3 transition-all duration-300"
               >
-                <span>Get Started</span>
+                <Heart size={18} fill="currentColor" className="group-hover:scale-110 transition-transform" />
+                <span>Réserver ma place</span>
                 <motion.div
                   className="group-hover:translate-x-1 transition-transform duration-300"
                   animate={{ x: [0, 3, 0] }}
@@ -245,10 +283,10 @@ export default function Hero() {
                 whileHover={{
                   scale: 1.05,
                   borderColor: 'rgba(201, 169, 97, 0.6)',
-                  backgroundColor: 'rgba(201, 169, 97, 0.1)'
+                  backgroundColor: 'rgba(201, 169, 97, 0.15)'
                 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-8 py-3.5 border-2 border-[#c9a961]/25 text-[#e8dcc4] font-medium text-sm rounded-full flex items-center gap-2.5 transition-all duration-300"
+                className="px-8 py-4 border-2 border-[#c9a961]/30 text-[#e8dcc4] font-medium text-sm rounded-full flex items-center gap-3 transition-all duration-300"
               >
                 <motion.div
                   className="w-8 h-8 bg-[#3d5a4e] rounded-full flex items-center justify-center"
@@ -265,7 +303,7 @@ export default function Hero() {
                 >
                   <Play size={14} fill="currentColor" className="text-[#e8dcc4] ml-0.5" />
                 </motion.div>
-                <span>See Video</span>
+                <span>Notre histoire</span>
               </motion.button>
             </motion.div>
           </motion.div>
@@ -339,48 +377,15 @@ export default function Hero() {
                 <div className="w-full h-full bg-[#e8dcc4] rounded-t-full rounded-b-2xl overflow-hidden shadow-inner">
                   <img
                     src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=1000&fit=crop&q=90"
-                    alt="Beach Wedding Ceremony"
+                    alt="Cérémonie de mariage"
                     className="w-full h-full object-cover"
                   />
                 </div>
               </div>
-
-              {/* Floating leaf decoration */}
-             
             </motion.div>
           </motion.div>
         </div>
       </div>
-
-      {/* Curved Bottom Section with Scroll Button */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 z-30 pointer-events-none">
-        {/* Curved SVG Background */}
-        <svg
-          className="absolute bottom-0 w-full h-full pointer-events-auto"
-          viewBox="0 0 1440 160"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <motion.path
-            d="M0,96 Q360,20 720,70 T1440,96 L1440,160 L0,160 Z"
-            fill="#d4c5a0"
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1.5 }}
-          />
-        </svg>
-
-        {/* Scroll Indicator Button */}
-        <motion.div
-          className="absolute left-1/2 top-6 transform -translate-x-1/2 pointer-events-auto"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 1.8 }}
-        >
-     
-        </motion.div>
-      </div>
-
       {/* Decorative pattern dots */}
       <motion.div
         className="absolute top-1/3 right-14 opacity-20"
@@ -407,5 +412,10 @@ export default function Hero() {
         </div>
       </motion.div>
     </div>
+    <PhotosSection/>
+    <RSVPSection/>
+    <DrinksSection/>
+    <GuestbookSection/>
+    </>
   );
 }
