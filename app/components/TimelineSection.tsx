@@ -257,7 +257,7 @@ export default function TimelineSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Programme de l'Événement
+            Programme de l{"'"}Événement
           </motion.h2>
 
           <motion.p
@@ -267,7 +267,7 @@ export default function TimelineSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Une journée d'amour, de joie et de célébration
+            Une journée d{"'"}amour, de joie et de célébration
             <br />
             <span className="text-[#c9a961] italic font-medium">Chaque moment est une étoile dans notre constellation</span>
           </motion.p>

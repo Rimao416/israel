@@ -153,7 +153,7 @@ export default function GuestbookSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Livre d'Or
+            Livre d{"'"}Or
           </motion.h2>
 
           <motion.p

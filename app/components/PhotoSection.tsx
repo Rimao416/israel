@@ -1,10 +1,34 @@
 "use client"
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+
+type PhotoSize = 'small' | 'medium' | 'large';
+
+interface Photo {
+  id: number;
+  url: string;
+  alt: string;
+  rotation: number;
+  delay: number;
+  size: PhotoSize;
+}
+
+// Generate random positions outside the component
+const generateRandomPositions = (count: number) => {
+  return Array.from({ length: count }, (_, i) => ({
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    index: i
+  }));
+};
+
+const BACKGROUND_HEARTS = generateRandomPositions(12);
+const SPARKLE_POSITIONS = generateRandomPositions(20);
 
 export default function PhotosSection() {
-  const photos = [
+  const photos: Photo[] = [
     {
       id: 1,
       url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&h=800&fit=crop&q=90",
@@ -55,7 +79,7 @@ export default function PhotosSection() {
     }
   ];
 
-  const getSizeClasses = (size) => {
+  const getSizeClasses = (size: PhotoSize): string => {
     switch(size) {
       case 'small':
         return 'w-[280px] h-[380px]';
@@ -69,15 +93,15 @@ export default function PhotosSection() {
   };
 
   return (
-    <div className="min-h-screen bg-[#d4c5a0] relative overflow-hidden py-20 px-6 lg:px-12">
+    <div className="min-h-screen bg-[#d4c5a0] relative overflow-hidden py-20 px-4 sm:px-6 lg:px-12">
       {/* Background Hearts */}
-      {[...Array(12)].map((_, i) => (
+      {BACKGROUND_HEARTS.map((heart) => (
         <motion.div
-          key={`bg-heart-${i}`}
+          key={`bg-heart-${heart.index}`}
           className="absolute text-[#c9a961]/10"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            left: `${heart.left}%`,
+            top: `${heart.top}%`,
           }}
           animate={{
             scale: [1, 1.5, 1],
@@ -85,23 +109,23 @@ export default function PhotosSection() {
             opacity: [0.05, 0.15, 0.05],
           }}
           transition={{
-            duration: 8 + i,
+            duration: 8 + heart.index,
             repeat: Infinity,
-            delay: i * 0.5,
+            delay: heart.index * 0.5,
           }}
         >
-          <Heart size={40 + i * 5} fill="currentColor" />
+          <Heart size={40 + heart.index * 5} fill="currentColor" />
         </motion.div>
       ))}
 
       {/* Floating Sparkles */}
-      {[...Array(20)].map((_, i) => (
+      {SPARKLE_POSITIONS.map((sparkle) => (
         <motion.div
-          key={`sparkle-${i}`}
+          key={`sparkle-${sparkle.index}`}
           className="absolute text-[#c9a961]/30"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            left: `${sparkle.left}%`,
+            top: `${sparkle.top}%`,
           }}
           animate={{
             y: [0, -30, 0],
@@ -111,7 +135,7 @@ export default function PhotosSection() {
           transition={{
             duration: 3,
             repeat: Infinity,
-            delay: i * 0.3,
+            delay: sparkle.index * 0.3,
           }}
         >
           <Sparkles size={16} />
@@ -138,9 +162,9 @@ export default function PhotosSection() {
         >
           <Heart size={40} className="text-[#c9a961] mx-auto mb-4" fill="currentColor" />
         </motion.div>
-        
+       
         <motion.h2
-          className="text-5xl lg:text-6xl font-light text-[#34453D] mb-4"
+          className="text-4xl sm:text-5xl lg:text-6xl font-light text-[#34453D] mb-4 px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -148,9 +172,9 @@ export default function PhotosSection() {
         >
           Notre Histoire
         </motion.h2>
-        
+       
         <motion.p
-          className="text-xl text-[#34453D]/70 font-light italic max-w-2xl mx-auto"
+          className="text-lg sm:text-xl text-[#34453D]/70 font-light italic max-w-2xl mx-auto px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -161,26 +185,26 @@ export default function PhotosSection() {
       </motion.div>
 
       {/* Photos Grid - Masonry Layout */}
-      <div className="max-w-[1400px] mx-auto relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
+      <div className="max-w-[1400px] mx-auto relative px-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 items-start justify-items-center">
           {photos.map((photo, index) => (
             <motion.div
               key={photo.id}
-              className={`relative ${getSizeClasses(photo.size)} mx-auto`}
+              className={`relative ${getSizeClasses(photo.size)} w-full max-w-[350px]`}
               initial={{ opacity: 0, y: 100, rotate: 0 }}
-              whileInView={{ 
-                opacity: 1, 
+              whileInView={{
+                opacity: 1,
                 y: 0,
-                rotate: photo.rotation 
+                rotate: photo.rotation
               }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ 
-                duration: 0.8, 
+              transition={{
+                duration: 0.8,
                 delay: photo.delay,
                 type: "spring",
                 stiffness: 100
               }}
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
                 rotate: 0,
                 zIndex: 50,
@@ -203,16 +227,19 @@ export default function PhotosSection() {
                 }}
               >
                 {/* Photo */}
-                <div className="relative overflow-hidden bg-gray-200">
-                  <img
+                <div className="relative overflow-hidden bg-gray-200 aspect-3/4">
+                  <Image
                     src={photo.url}
                     alt={photo.alt}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    unoptimized
                   />
-                  
+                 
                   {/* Hover Overlay */}
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-t from-[#c9a961]/80 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"
+                    className="absolute inset-0 bg-linear-to-t from-[#c9a961]/80 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"
                     whileHover={{ opacity: 1 }}
                   >
                     <p className="text-white font-light text-lg">{photo.alt}</p>
@@ -226,7 +253,7 @@ export default function PhotosSection() {
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: photo.delay + 0.5 }}
                 >
-                  <p className="text-[#34453D]/60 font-['Brush_Script_MT',cursive] text-xl">
+                  <p className="text-[#34453D]/60 font-light text-xl">
                     {photo.alt}
                   </p>
                 </motion.div>
@@ -290,14 +317,14 @@ export default function PhotosSection() {
 
       {/* Bottom Message */}
       <motion.div
-        className="text-center mt-20 relative z-10"
+        className="text-center mt-20 relative z-10 px-4"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 1, delay: 0.5 }}
       >
         <motion.p
-          className="text-2xl lg:text-3xl text-[#34453D] font-light italic"
+          className="text-xl sm:text-2xl lg:text-3xl text-[#34453D] font-light italic"
           animate={{
             opacity: [0.7, 1, 0.7]
           }}
@@ -306,7 +333,7 @@ export default function PhotosSection() {
             repeat: Infinity
           }}
         >
-          Et ce n'est que le début de notre aventure...
+          Et ce n&apos;est que le début de notre aventure...
         </motion.p>
       </motion.div>
     </div>

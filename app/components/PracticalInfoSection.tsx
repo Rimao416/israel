@@ -165,7 +165,7 @@ export default function PracticalInfoSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Tout ce qu'il vous faut savoir pour nous rejoindre
+            Tout ce qu{"'"}il vous faut savoir pour nous rejoindre
             <br />
             <span className="text-[#c9a961] italic">Nous avons hâte de vous accueillir</span>
           </motion.p>
@@ -206,7 +206,7 @@ export default function PracticalInfoSection() {
                     Lieu de la réception
                   </h3>
                   <p className="text-[#c9a961] font-light italic">
-                    Où notre histoire s'écrira
+                    Où notre histoire s{"'"}écrira
                   </p>
                 </div>
               </div>
@@ -249,7 +249,7 @@ export default function PracticalInfoSection() {
                 whileTap={{ scale: 0.98 }}
               >
                 <Navigation size={20} />
-                <span>Obtenir l'itinéraire</span>
+                <span>Obtenir l{"'"}itinéraire</span>
               </motion.a>
             </div>
           </motion.div>
