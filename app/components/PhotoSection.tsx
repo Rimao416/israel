@@ -31,7 +31,7 @@ export default function PhotosSection() {
   const photos: Photo[] = [
     {
       id: 1,
-      url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&h=800&fit=crop&q=90",
+      url: "couple_1.jpeg",
       alt: "Couple enlacé",
       rotation: -8,
       delay: 0,
@@ -39,7 +39,7 @@ export default function PhotosSection() {
     },
     {
       id: 2,
-      url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=500&h=700&fit=crop&q=90",
+      url: "couple_2.jpeg",
       alt: "Moment tendre",
       rotation: 5,
       delay: 0.2,
@@ -47,7 +47,7 @@ export default function PhotosSection() {
     },
     {
       id: 3,
-      url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=550&h=750&fit=crop&q=90",
+      url: "couple_5.jpeg",
       alt: "Rires partagés",
       rotation: -12,
       delay: 0.4,
@@ -55,7 +55,7 @@ export default function PhotosSection() {
     },
     {
       id: 4,
-      url: "https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=500&h=650&fit=crop&q=90",
+      url: "couple_3.jpeg",
       alt: "Complicité",
       rotation: 10,
       delay: 0.6,
@@ -63,7 +63,7 @@ export default function PhotosSection() {
     },
     {
       id: 5,
-      url: "https://images.unsplash.com/photo-1594398901394-4e34939a4fd0?w=600&h=800&fit=crop&q=90",
+      url: "couple_4.jpeg",
       alt: "Tendresse",
       rotation: -6,
       delay: 0.8,
@@ -71,7 +71,7 @@ export default function PhotosSection() {
     },
     {
       id: 6,
-      url: "https://images.unsplash.com/photo-1519741497674-611481863552?w=550&h=750&fit=crop&q=90",
+      url: "main.jpeg",
       alt: "Amour éternel",
       rotation: 8,
       delay: 1,

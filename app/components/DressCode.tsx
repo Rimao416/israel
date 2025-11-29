@@ -6,50 +6,50 @@ import { Heart, Sparkles, X } from 'lucide-react';
 export default function DresscodeSection() {
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
-  const dressCodeItems = [
-    {
-      id: 1,
-      title: "Élégance Féminine",
-      category: "Pour Elle",
-      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=1200&fit=crop&q=90",
-      description: "Robes longues fluides, tons pastel ou dorés, élégance raffinée"
-    },
-    {
-      id: 2,
-      title: "Sophistication Masculine",
-      category: "Pour Lui",
-      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=1200&fit=crop&q=90",
-      description: "Costume sombre ou beige, chemise claire, cravate élégante"
-    },
-    {
-      id: 3,
-      title: "Harmonie Chromatique",
-      category: "Palette",
-      image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=1200&fit=crop&q=90",
-      description: "Tons champagne, or, beige, vert sauge et blanc cassé"
-    },
-    {
-      id: 4,
-      title: "Accessoires Raffinés",
-      category: "Détails",
-      image: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800&h=1200&fit=crop&q=90",
-      description: "Bijoux délicats, pochette élégante, chaussures raffinées"
-    },
-    {
-      id: 5,
-      title: "Style Romantique",
-      category: "Inspiration",
-      image: "https://images.unsplash.com/photo-1594552072238-3ccb2f8d1e0d?w=800&h=1200&fit=crop&q=90",
-      description: "Dentelle, tissus fluides, broderies délicates, douceur"
-    },
-    {
-      id: 6,
-      title: "Élégance Intemporelle",
-      category: "Classique",
-      image: "https://images.unsplash.com/photo-1523438097201-512ae7d59c44?w=800&h=1200&fit=crop&q=90",
-      description: "Coupes classiques, matières nobles, finitions soignées"
-    }
-  ];
+ const dressCodeItems = [
+  {
+    id: 1,
+    title: "Élégance Féminine",
+    category: "Pour Elle",
+    image: "/expanded_1.jpeg",
+    description: "Robes longues fluides, tons pastel ou dorés, élégance raffinée"
+  },
+  {
+    id: 2,
+    title: "Sophistication Masculine",
+    category: "Pour Lui",
+    image: "/expanded_2.jpeg",
+    description: "Costume sombre ou beige, chemise claire, cravate élégante"
+  },
+  {
+    id: 3,
+    title: "Harmonie Chromatique",
+    category: "Palette",
+    image: "/expanded_3.jpeg",
+    description: "Tons champagne, or, beige, vert sauge et blanc cassé"
+  },
+  {
+    id: 4,
+    title: "Accessoires Raffinés",
+    category: "Détails",
+    image: "/expanded_4.jpeg",
+    description: "Bijoux délicats, pochette élégante, chaussures raffinées"
+  },
+  {
+    id: 5,
+    title: "Style Romantique",
+    category: "Inspiration",
+    image: "/expanded_5.jpeg",
+    description: "Dentelle, tissus fluides, broderies délicates, douceur"
+  },
+  {
+    id: 6,
+    title: "Élégance Intemporelle",
+    category: "Classique",
+    image: "/expanded_6.jpeg",
+    description: "Coupes classiques, matières nobles, finitions soignées"
+  }
+];
 
   // Sparkles positions - useState pour éviter la regénération à chaque render
   const [sparklePositions] = useState(() =>
