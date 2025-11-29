@@ -6,6 +6,7 @@ import PhotosSection from './components/PhotoSection';
 import RSVPSection from './components/RSVP';
 import DrinksSection from './components/Boissons';
 import GuestbookSection from './components/GuestbookSection';
+import DresscodeSection from './components/DressCode';
 
 export default function Hero() {
   // Generate random positions once during component initialization with useState
@@ -416,6 +417,7 @@ export default function Hero() {
     <RSVPSection/>
     <DrinksSection/>
     <GuestbookSection/>
+    <DresscodeSection/>
     </>
   );
 }
