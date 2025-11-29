@@ -8,6 +8,7 @@ import DrinksSection from './components/Boissons';
 import GuestbookSection from './components/GuestbookSection';
 import DresscodeSection from './components/DressCode';
 import TimelineSection from './components/TimelineSection';
+import PracticalInfoSection from './components/PracticalInfoSection';
 
 export default function Hero() {
   // Generate random positions once during component initialization with useState
@@ -378,7 +379,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-gradient-to-b from-[#4a5f54] to-[#3d5248] rounded-t-full rounded-b-3xl shadow-2xl p-5">
                 <div className="w-full h-full bg-[#e8dcc4] rounded-t-full rounded-b-2xl overflow-hidden shadow-inner">
                   <img
-                    src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=1000&fit=crop&q=90"
+                    src="/main.jpg"
                     alt="Cérémonie de mariage"
                     className="w-full h-full object-cover"
                   />
@@ -420,6 +421,7 @@ export default function Hero() {
     <GuestbookSection/>
     <DresscodeSection/>
     <TimelineSection/>
+    <PracticalInfoSection/>
     </>
   );
 }
