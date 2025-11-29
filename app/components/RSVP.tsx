@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Heart, Mail, Check, Sparkles, UserCheck, UserX } from 'lucide-react';
 
 export default function RSVPSection() {
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState<'yes' | 'no' | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = () => {
@@ -19,6 +19,15 @@ export default function RSVPSection() {
       left: Math.random() * 100,
       top: Math.random() * 100,
       delay: Math.random() * 4
+    }))
+  );
+
+  // Confetti positions
+  const [confettiPositions] = useState(() =>
+    Array.from({ length: 12 }, () => ({
+      x: (Math.random() - 0.5) * 300,
+      y: (Math.random() - 0.5) * 300,
+      rotate: Math.random() * 360
     }))
   );
 
@@ -41,7 +50,6 @@ export default function RSVPSection() {
           ease: "easeInOut"
         }}
       />
-
       <motion.div
         className="absolute bottom-20 right-40 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
         style={{
@@ -133,7 +141,6 @@ export default function RSVPSection() {
           >
             <Heart size={48} className="text-[#c9a961]" fill="currentColor" />
           </motion.div>
-
           <motion.h2
             className="text-4xl md:text-5xl lg:text-6xl font-light text-[#34453D] mb-4"
             initial={{ opacity: 0, y: 20 }}
@@ -143,7 +150,6 @@ export default function RSVPSection() {
           >
             Confirmez votre présence
           </motion.h2>
-
           <motion.p
             className="text-lg md:text-xl text-[#34453D]/70 font-light max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
@@ -185,7 +191,7 @@ export default function RSVPSection() {
                     transition={{ duration: 0.3 }}
                   />
                 )}
-                
+               
                 <div className="relative z-10 flex flex-col items-center gap-4">
                   <motion.div
                     className={`w-16 h-16 rounded-full flex items-center justify-center ${
@@ -196,18 +202,17 @@ export default function RSVPSection() {
                     } : {}}
                     transition={{ duration: 0.5, repeat: selectedOption === 'yes' ? Infinity : 0 }}
                   >
-                    <UserCheck 
-                      size={32} 
-                      className={selectedOption === 'yes' ? 'text-[#c9a961]' : 'text-[#34453D]'} 
+                    <UserCheck
+                      size={32}
+                      className={selectedOption === 'yes' ? 'text-[#c9a961]' : 'text-[#34453D]'}
                     />
                   </motion.div>
-                  
+                 
                   <span className={`text-xl font-medium ${
                     selectedOption === 'yes' ? 'text-white' : 'text-[#34453D]'
                   }`}>
                     Je serai présent(e)
                   </span>
-
                   {selectedOption === 'yes' && (
                     <motion.div
                       initial={{ scale: 0 }}
@@ -239,18 +244,17 @@ export default function RSVPSection() {
                       selectedOption === 'no' ? 'bg-[#34453D]' : 'bg-[#34453D]/10'
                     }`}
                   >
-                    <UserX 
-                      size={32} 
-                      className={selectedOption === 'no' ? 'text-white' : 'text-[#34453D]'} 
+                    <UserX
+                      size={32}
+                      className={selectedOption === 'no' ? 'text-white' : 'text-[#34453D]'}
                     />
                   </motion.div>
-                  
+                 
                   <span className={`text-xl font-medium ${
                     selectedOption === 'no' ? 'text-[#34453D]' : 'text-[#34453D]'
                   }`}>
                     Je ne pourrai pas venir
                   </span>
-
                   {selectedOption === 'no' && (
                     <motion.div
                       initial={{ scale: 0 }}
@@ -301,7 +305,7 @@ export default function RSVPSection() {
             transition={{ duration: 0.6 }}
           >
             <motion.div
-              className="text-center"
+              className="text-center relative"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -345,15 +349,14 @@ export default function RSVPSection() {
               >
                 Merci pour votre confirmation !
               </motion.h3>
-
               <motion.p
                 className="text-xl text-[#34453D]/70 font-light"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                {selectedOption === 'yes' 
-                  ? "Nous avons hâte de vous voir !" 
+                {selectedOption === 'yes'
+                  ? "Nous avons hâte de vous voir !"
                   : "Nous espérons vous voir une prochaine fois."}
               </motion.p>
 
@@ -363,16 +366,16 @@ export default function RSVPSection() {
                   key={`confetti-${i}`}
                   className="absolute text-[#c9a961]"
                   style={{
-                    left: `${50}%`,
-                    top: `${50}%`,
+                    left: '50%',
+                    top: '50%',
                   }}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{
                     opacity: [0, 1, 0],
                     scale: [0, 1, 0.5],
-                    x: [0, (Math.random() - 0.5) * 300],
-                    y: [0, (Math.random() - 0.5) * 300],
-                    rotate: [0, Math.random() * 360],
+                    x: [0, confettiPositions[i].x],
+                    y: [0, confettiPositions[i].y],
+                    rotate: [0, confettiPositions[i].rotate],
                   }}
                   transition={{
                     duration: 2,

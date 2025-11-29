@@ -1,9 +1,18 @@
 "use client"
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Sparkles, MapPin, Users, QrCode, Navigation } from 'lucide-react';
+import { Heart, Mail, Check, Sparkles, UserCheck, UserX } from 'lucide-react';
 
-export default function PracticalInfoSection() {
+export default function RSVPSection() {
+  const [selectedOption, setSelectedOption] = useState<'yes' | 'no' | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = () => {
+    if (selectedOption) {
+      setSubmitted(true);
+    }
+  };
+
   // Sparkles positions
   const [sparklePositions] = useState(() =>
     Array.from({ length: 20 }, () => ({
@@ -13,38 +22,46 @@ export default function PracticalInfoSection() {
     }))
   );
 
+  // Confetti positions
+  const [confettiPositions] = useState(() =>
+    Array.from({ length: 12 }, () => ({
+      x: (Math.random() - 0.5) * 300,
+      y: (Math.random() - 0.5) * 300,
+      rotate: Math.random() * 360
+    }))
+  );
+
   return (
-    <div className="min-h-screen bg-[#34453D] relative overflow-hidden py-20 px-6 font-['Montserrat']">
+    <div className="min-h-screen bg-[#f5f1e8] relative overflow-hidden py-20 px-6 font-['Montserrat']">
       {/* Animated Background Orbs */}
       <motion.div
-        className="absolute top-32 left-20 w-[500px] h-[500px] rounded-full blur-3xl"
+        className="absolute top-40 left-20 w-[400px] h-[400px] rounded-full blur-3xl opacity-30"
         style={{
-          background: 'radial-gradient(circle, rgba(201,169,97,0.15) 0%, transparent 70%)'
+          background: 'radial-gradient(circle, rgba(201,169,97,0.25) 0%, transparent 70%)'
         }}
         animate={{
-          scale: [1, 1.3, 1],
-          x: [0, 50, 0],
-          y: [0, -40, 0],
+          scale: [1, 1.2, 1],
+          x: [0, 30, 0],
+          y: [0, 40, 0],
         }}
         transition={{
-          duration: 16,
+          duration: 12,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       />
-
       <motion.div
-        className="absolute bottom-40 right-32 w-[550px] h-[550px] rounded-full blur-3xl"
+        className="absolute bottom-20 right-40 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
         style={{
-          background: 'radial-gradient(circle, rgba(232,220,196,0.12) 0%, transparent 70%)'
+          background: 'radial-gradient(circle, rgba(52,69,61,0.2) 0%, transparent 70%)'
         }}
         animate={{
-          scale: [1.2, 1, 1.2],
-          x: [0, -60, 0],
-          y: [0, 50, 0],
+          scale: [1.1, 1, 1.1],
+          x: [0, -50, 0],
+          y: [0, 30, 0],
         }}
         transition={{
-          duration: 18,
+          duration: 15,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -61,7 +78,7 @@ export default function PracticalInfoSection() {
           }}
           animate={{
             scale: [0, 1, 0],
-            opacity: [0, 0.7, 0],
+            opacity: [0, 0.6, 0],
             rotate: [0, 180],
           }}
           transition={{
@@ -71,37 +88,37 @@ export default function PracticalInfoSection() {
             ease: "easeInOut"
           }}
         >
-          <Sparkles size={12} />
+          <Sparkles size={14} />
         </motion.div>
       ))}
 
       {/* Floating Hearts */}
       {[...Array(8)].map((_, i) => (
         <motion.div
-          key={`heart-${i}`}
-          className="absolute text-[#c9a961]/15"
+          key={`heart-bg-${i}`}
+          className="absolute text-[#c9a961]/10"
           style={{
             left: `${10 + i * 12}%`,
-            bottom: '-10%',
+            top: '100%',
           }}
           animate={{
-            y: [-50, -1000],
-            x: [0, Math.sin(i * 2) * 90],
+            y: [0, -1200],
+            x: [0, Math.sin(i) * 80],
             rotate: [0, 360],
             opacity: [0, 0.5, 0],
           }}
           transition={{
             duration: 10 + i * 1.5,
             repeat: Infinity,
-            delay: i * 1.3,
+            delay: i * 1.2,
             ease: "linear"
           }}
         >
-          <Heart size={20} fill="currentColor" />
+          <Heart size={24} fill="currentColor" />
         </motion.div>
       ))}
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
         <motion.div
           className="text-center mb-16"
@@ -111,446 +128,268 @@ export default function PracticalInfoSection() {
           transition={{ duration: 0.8 }}
         >
           <motion.div
-            className="inline-flex items-center gap-3 mb-6"
+            className="inline-block mb-4"
             animate={{
-              y: [0, -8, 0]
+              scale: [1, 1.1, 1],
+              rotate: [0, 5, -5, 0]
             }}
             transition={{
-              duration: 3,
+              duration: 4,
               repeat: Infinity,
               ease: "easeInOut"
             }}
           >
-            <motion.div
-              animate={{
-                rotate: [0, 10, -10, 0]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <MapPin size={48} className="text-[#c9a961]" strokeWidth={1.5} />
-            </motion.div>
-            <Heart size={40} className="text-[#c9a961]" fill="currentColor" />
-            <motion.div
-              animate={{
-                scale: [1, 1.2, 1]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <Sparkles size={48} className="text-[#c9a961]" />
-            </motion.div>
+            <Heart size={48} className="text-[#c9a961]" fill="currentColor" />
           </motion.div>
-
           <motion.h2
-            className="text-4xl md:text-5xl lg:text-6xl font-light text-[#e8dcc4] mb-4"
+            className="text-4xl md:text-5xl lg:text-6xl font-light text-[#34453D] mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Informations Pratiques
+            Confirmez votre présence
           </motion.h2>
-
           <motion.p
-            className="text-lg md:text-xl text-[#e8dcc4]/70 font-light max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-[#34453D]/70 font-light max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Tout ce qu{"'"}il vous faut savoir pour nous rejoindre
-            <br />
-            <span className="text-[#c9a961] italic">Nous avons hâte de vous accueillir</span>
+            Votre présence nous ferait un immense plaisir. Merci de confirmer avant le{' '}
+            <span className="text-[#c9a961] font-medium">11 octobre 2025</span>
           </motion.p>
         </motion.div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Lieu de réception - Full width on mobile, left column on desktop */}
+        {!submitted ? (
           <motion.div
-            className="lg:col-span-2"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-[#c9a961]/20"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <div className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl hover:border-[#c9a961]/50 transition-all duration-300">
-              {/* Icon and Title */}
-              <div className="flex items-center gap-4 mb-6">
-                <motion.div
-                  className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center"
-                  animate={{
-                    boxShadow: [
-                      '0 0 20px rgba(201, 169, 97, 0.3)',
-                      '0 0 30px rgba(201, 169, 97, 0.6)',
-                      '0 0 20px rgba(201, 169, 97, 0.3)',
-                    ]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <MapPin size={32} className="text-white" strokeWidth={2} />
-                </motion.div>
-                <div>
-                  <h3 className="text-2xl font-medium text-[#e8dcc4] mb-1">
-                    Lieu de la réception
-                  </h3>
-                  <p className="text-[#c9a961] font-light italic">
-                    Où notre histoire s{"'"}écrira
-                  </p>
-                </div>
-              </div>
-
-              {/* Venue Name */}
-              <motion.div
-                className="bg-[#c9a961]/10 rounded-2xl p-6 mb-6 border border-[#c9a961]/20"
-                whileHover={{ scale: 1.01 }}
-              >
-                <p className="text-3xl font-light text-[#e8dcc4] text-center">
-                  Salle des fêtes Zitouna
-                </p>
-              </motion.div>
-
-              {/* Map */}
-              <motion.div
-                className="rounded-2xl overflow-hidden shadow-xl border-2 border-[#c9a961]/30"
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.3 }}
-              >
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3193.4458414327496!2d10.123777610801003!3d36.83179706580309!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2stn!4v1764428694823!5m2!1sfr!2stn" 
-                  width="100%" 
-                  height="400" 
-                  style={{ border: 0 }} 
-                  allowFullScreen={true}
-                  loading="lazy" 
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full"
-                />
-              </motion.div>
-
-              {/* Get Directions Button */}
-              <motion.a
-                href="https://www.google.com/maps/place/36.83179706580309,10.123777610801003"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 w-full py-4 bg-[#c9a961] text-white font-medium rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 hover:shadow-xl"
-                whileHover={{ scale: 1.02, y: -2 }}
+            {/* RSVP Options */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Option: Je serai présent(e) */}
+              <motion.button
+                onClick={() => setSelectedOption('yes')}
+                className={`relative overflow-hidden rounded-2xl p-8 border-3 transition-all duration-300 ${
+                  selectedOption === 'yes'
+                    ? 'bg-[#c9a961] border-[#c9a961] shadow-xl'
+                    : 'bg-[#34453D]/5 border-[#34453D]/20 hover:border-[#c9a961]/50'
+                }`}
+                whileHover={{ scale: 1.02, y: -4 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Navigation size={20} />
-                <span>Obtenir l{"'"}itinéraire</span>
-              </motion.a>
+                {selectedOption === 'yes' && (
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-br from-[#c9a961]/20 to-transparent"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+               
+                <div className="relative z-10 flex flex-col items-center gap-4">
+                  <motion.div
+                    className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                      selectedOption === 'yes' ? 'bg-white' : 'bg-[#c9a961]/20'
+                    }`}
+                    animate={selectedOption === 'yes' ? {
+                      scale: [1, 1.1, 1],
+                    } : {}}
+                    transition={{ duration: 0.5, repeat: selectedOption === 'yes' ? Infinity : 0 }}
+                  >
+                    <UserCheck
+                      size={32}
+                      className={selectedOption === 'yes' ? 'text-[#c9a961]' : 'text-[#34453D]'}
+                    />
+                  </motion.div>
+                 
+                  <span className={`text-xl font-medium ${
+                    selectedOption === 'yes' ? 'text-white' : 'text-[#34453D]'
+                  }`}>
+                    Je serai présent(e)
+                  </span>
+                  {selectedOption === 'yes' && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-4 right-4"
+                    >
+                      <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <Check size={20} className="text-[#c9a961]" strokeWidth={3} />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              </motion.button>
+
+              {/* Option: Je ne pourrai pas venir */}
+              <motion.button
+                onClick={() => setSelectedOption('no')}
+                className={`relative overflow-hidden rounded-2xl p-8 border-3 transition-all duration-300 ${
+                  selectedOption === 'no'
+                    ? 'bg-[#34453D]/10 border-[#34453D] shadow-xl'
+                    : 'bg-[#34453D]/5 border-[#34453D]/20 hover:border-[#34453D]/40'
+                }`}
+                whileHover={{ scale: 1.02, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="relative z-10 flex flex-col items-center gap-4">
+                  <motion.div
+                    className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                      selectedOption === 'no' ? 'bg-[#34453D]' : 'bg-[#34453D]/10'
+                    }`}
+                  >
+                    <UserX
+                      size={32}
+                      className={selectedOption === 'no' ? 'text-white' : 'text-[#34453D]'}
+                    />
+                  </motion.div>
+                 
+                  <span className={`text-xl font-medium ${
+                    selectedOption === 'no' ? 'text-[#34453D]' : 'text-[#34453D]'
+                  }`}>
+                    Je ne pourrai pas venir
+                  </span>
+                  {selectedOption === 'no' && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-4 right-4"
+                    >
+                      <div className="w-8 h-8 bg-[#34453D] rounded-full flex items-center justify-center">
+                        <Check size={20} className="text-white" strokeWidth={3} />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              </motion.button>
             </div>
-          </motion.div>
 
-          {/* Numéro de table */}
+            {/* Submit Button */}
+            <motion.button
+              onClick={handleSubmit}
+              disabled={!selectedOption}
+              className={`w-full py-5 rounded-full font-medium text-lg flex items-center justify-center gap-3 transition-all duration-300 ${
+                selectedOption
+                  ? 'bg-[#c9a961] text-white hover:shadow-2xl cursor-pointer'
+                  : 'bg-[#34453D]/10 text-[#34453D]/40 cursor-not-allowed'
+              }`}
+              whileHover={selectedOption ? { scale: 1.02, y: -2 } : {}}
+              whileTap={selectedOption ? { scale: 0.98 } : {}}
+              animate={selectedOption ? {
+                boxShadow: [
+                  '0 10px 30px rgba(201, 169, 97, 0.2)',
+                  '0 15px 40px rgba(201, 169, 97, 0.4)',
+                  '0 10px 30px rgba(201, 169, 97, 0.2)',
+                ]
+              } : {}}
+              transition={{
+                boxShadow: { duration: 2, repeat: Infinity }
+              }}
+            >
+              <Mail size={20} />
+              <span>Envoyer ma réponse</span>
+            </motion.button>
+          </motion.div>
+        ) : (
+          // Confirmation Message
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 md:p-16 shadow-2xl border-2 border-[#c9a961]"
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
             <motion.div
-              className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl h-full hover:border-[#c9a961]/50 transition-all duration-300"
-              whileHover={{ scale: 1.02, y: -5 }}
+              className="text-center relative"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
             >
-              {/* Icon and Title */}
-              <div className="flex items-center gap-4 mb-8">
-                <motion.div
-                  className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center"
-                  animate={{
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Users size={32} className="text-white" strokeWidth={2} />
-                </motion.div>
-                <div>
-                  <h3 className="text-2xl font-medium text-[#e8dcc4] mb-1">
-                    Votre table
-                  </h3>
-                  <p className="text-[#c9a961] font-light italic">
-                    Votre place réservée
-                  </p>
-                </div>
-              </div>
-
-              {/* Table Number Display */}
-              <div className="flex flex-col items-center justify-center py-12">
-                <motion.div
-                  className="relative"
-                  animate={{
-                    y: [0, -10, 0]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  {/* Decorative circles */}
+              <motion.div
+                className="inline-block mb-6"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 15,
+                  delay: 0.2
+                }}
+              >
+                <div className="w-20 h-20 bg-[#c9a961] rounded-full flex items-center justify-center mx-auto">
                   <motion.div
-                    className="absolute inset-0 rounded-full border-2 border-[#c9a961]/30"
                     animate={{
-                      scale: [1, 1.2],
-                      opacity: [0.5, 0]
+                      scale: [1, 1.2, 1],
                     }}
                     transition={{
-                      duration: 2,
+                      duration: 1,
                       repeat: Infinity,
-                      ease: "easeOut"
-                    }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 rounded-full border-2 border-[#c9a961]/30"
-                    animate={{
-                      scale: [1, 1.2],
-                      opacity: [0.5, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeOut",
-                      delay: 1
-                    }}
-                  />
-
-                  <div className="relative bg-[#c9a961] w-32 h-32 rounded-full flex items-center justify-center shadow-2xl">
-                    <div className="text-center">
-                      <p className="text-white/70 text-sm font-light mb-1">Table</p>
-                      <p className="text-white text-5xl font-light">1</p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  className="mt-8 bg-[#c9a961]/10 px-8 py-4 rounded-full border border-[#c9a961]/30"
-                  animate={{
-                    boxShadow: [
-                      '0 0 20px rgba(201, 169, 97, 0.2)',
-                      '0 0 30px rgba(201, 169, 97, 0.4)',
-                      '0 0 20px rgba(201, 169, 97, 0.2)',
-                    ]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }}
-                >
-                  <p className="text-[#e8dcc4] text-2xl font-light">Grace</p>
-                </motion.div>
-              </div>
-
-              {/* Decorative hearts */}
-              <div className="flex items-center justify-center gap-2 mt-6">
-                {[...Array(5)].map((_, i) => (
-                  <motion.div
-                    key={`table-heart-${i}`}
-                    animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [0.3, 0.7, 0.3]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: i * 0.2
+                      ease: "easeInOut"
                     }}
                   >
-                    <Heart size={10 + i * 2} className="text-[#c9a961]" fill="currentColor" />
+                    {selectedOption === 'yes' ? (
+                      <Heart size={40} fill="white" className="text-white" />
+                    ) : (
+                      <Check size={40} className="text-white" strokeWidth={3} />
+                    )}
                   </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* QR Code */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <motion.div
-              className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl h-full hover:border-[#c9a961]/50 transition-all duration-300"
-              whileHover={{ scale: 1.02, y: -5 }}
-            >
-              {/* Icon and Title */}
-              <div className="flex items-center gap-4 mb-8">
-                <motion.div
-                  className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center"
-                  animate={{
-                    scale: [1, 1.1, 1]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <QrCode size={32} className="text-white" strokeWidth={2} />
-                </motion.div>
-                <div>
-                  <h3 className="text-2xl font-medium text-[#e8dcc4] mb-1">
-                    Votre invitation
-                  </h3>
-                  <p className="text-[#c9a961] font-light italic">
-                    À présenter le jour J
-                  </p>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* QR Code Display */}
-              <div className="flex flex-col items-center justify-center py-8">
-                <motion.div
-                  className="relative"
-                  animate={{
-                    rotate: [0, 360]
-                  }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                >
-                  {/* Decorative border rotating */}
-                  <div className="absolute -inset-4 rounded-3xl border-2 border-[#c9a961]/30" />
-                </motion.div>
+              <motion.h3
+                className="text-3xl md:text-4xl font-light text-[#34453D] mb-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                Merci pour votre confirmation !
+              </motion.h3>
+              <motion.p
+                className="text-xl text-[#34453D]/70 font-light"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {selectedOption === 'yes'
+                  ? "Nous avons hâte de vous voir !"
+                  : "Nous espérons vous voir une prochaine fois."}
+              </motion.p>
 
+              {/* Confetti Hearts */}
+              {selectedOption === 'yes' && confettiPositions.map((pos, i) => (
                 <motion.div
-                  className="relative bg-white p-6 rounded-2xl shadow-2xl"
+                  key={`confetti-${i}`}
+                  className="absolute text-[#c9a961]"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                  }}
+                  initial={{ opacity: 0, scale: 0 }}
                   animate={{
-                    boxShadow: [
-                      '0 0 30px rgba(201, 169, 97, 0.3)',
-                      '0 0 50px rgba(201, 169, 97, 0.5)',
-                      '0 0 30px rgba(201, 169, 97, 0.3)',
-                    ]
+                    opacity: [0, 1, 0],
+                    scale: [0, 1, 0.5],
+                    x: [0, pos.x],
+                    y: [0, pos.y],
+                    rotate: [0, pos.rotate],
                   }}
                   transition={{
                     duration: 2,
-                    repeat: Infinity
+                    delay: 0.6 + i * 0.1,
+                    ease: "easeOut"
                   }}
                 >
-                  {/* QR Code Placeholder - Replace with actual QR code */}
-                  <div className="w-48 h-48 bg-white flex items-center justify-center">
-                    <div className="grid grid-cols-8 gap-1">
-                      {[...Array(64)].map((_, i) => (
-                        <motion.div
-                          key={`qr-${i}`}
-                          className={`w-4 h-4 ${
-                            Math.random() > 0.5 ? 'bg-[#34453D]' : 'bg-white'
-                          }`}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: i * 0.01 }}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  <Heart size={20} fill="currentColor" />
                 </motion.div>
-
-                <motion.p
-                  className="mt-6 text-[#e8dcc4]/70 text-sm font-light text-center"
-                  animate={{
-                    opacity: [0.5, 1, 0.5]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }}
-                >
-                  Scannez ce code à l'entrée
-                </motion.p>
-              </div>
-
-              {/* Sparkles decoration */}
-              <div className="flex items-center justify-center gap-3 mt-4">
-                {[...Array(3)].map((_, i) => (
-                  <motion.div
-                    key={`qr-sparkle-${i}`}
-                    animate={{
-                      scale: [0, 1, 0],
-                      rotate: [0, 180]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: i * 0.3
-                    }}
-                  >
-                    <Sparkles size={16} className="text-[#c9a961]" />
-                  </motion.div>
-                ))}
-              </div>
+              ))}
             </motion.div>
           </motion.div>
-        </div>
+        )}
       </div>
-
-      {/* Decorative pattern dots */}
-      <motion.div
-        className="absolute top-1/3 left-8 opacity-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.5 }}
-      >
-        <div className="grid grid-cols-3 gap-3">
-          {[...Array(9)].map((_, i) => (
-            <motion.div
-              key={`dot-left-${i}`}
-              className="w-1.5 h-1.5 bg-[#c9a961] rounded-full"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: i * 0.2
-              }}
-            />
-          ))}
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="absolute bottom-1/4 right-8 opacity-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.7 }}
-      >
-        <div className="grid grid-cols-3 gap-3">
-          {[...Array(9)].map((_, i) => (
-            <motion.div
-              key={`dot-right-${i}`}
-              className="w-1.5 h-1.5 bg-[#c9a961] rounded-full"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: i * 0.2 + 0.5
-              }}
-            />
-          ))}
-        </div>
-      </motion.div>
     </div>
   );
 }

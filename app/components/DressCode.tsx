@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, X } from 'lucide-react';
 
 export default function DresscodeSection() {
-  const [expandedCard, setExpandedCard] = useState(null);
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
   const dressCodeItems = [
     {
@@ -51,12 +51,21 @@ export default function DresscodeSection() {
     }
   ];
 
-  // Sparkles positions
+  // Sparkles positions - useState pour éviter la regénération à chaque render
   const [sparklePositions] = useState(() =>
     Array.from({ length: 20 }, () => ({
       left: Math.random() * 100,
       top: Math.random() * 100,
       delay: Math.random() * 4
+    }))
+  );
+
+  // Positions pour les sparkles du modal
+  const [modalSparklePositions] = useState(() =>
+    Array.from({ length: 15 }, () => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 3
     }))
   );
 
@@ -79,7 +88,6 @@ export default function DresscodeSection() {
           ease: "easeInOut"
         }}
       />
-
       <motion.div
         className="absolute bottom-40 left-20 w-[550px] h-[550px] rounded-full blur-3xl"
         style={{
@@ -197,7 +205,6 @@ export default function DresscodeSection() {
               🤵
             </motion.span>
           </motion.div>
-
           <motion.h2
             className="text-4xl md:text-5xl lg:text-6xl font-light text-[#e8dcc4] mb-4"
             initial={{ opacity: 0, y: 20 }}
@@ -207,7 +214,6 @@ export default function DresscodeSection() {
           >
             Code Vestimentaire
           </motion.h2>
-
           <motion.p
             className="text-lg md:text-xl text-[#e8dcc4]/70 font-light max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
@@ -249,10 +255,8 @@ export default function DresscodeSection() {
                   alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#34453D] via-[#34453D]/60 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
-
+                <div className="absolute inset-0 bg-linear-to-t from-[#34453D] via-[#34453D]/60 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
                 {/* Content */}
                 <div className="absolute inset-0 p-6 flex flex-col justify-end">
                   <motion.div
@@ -269,16 +273,13 @@ export default function DresscodeSection() {
                     <Sparkles size={14} className="text-white" />
                     <span className="text-white text-sm font-medium">{item.category}</span>
                   </motion.div>
-
                   <h3 className="text-2xl font-light text-[#e8dcc4] mb-2 group-hover:text-white transition-colors duration-300">
                     {item.title}
                   </h3>
-
                   <p className="text-[#e8dcc4]/70 text-sm font-light opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     Cliquez pour voir les détails
                   </p>
                 </div>
-
                 {/* Decorative corner */}
                 <motion.div
                   className="absolute top-4 right-4 w-12 h-12 border-r-2 border-t-2 border-[#c9a961]/50 rounded-tr-2xl"
@@ -287,7 +288,6 @@ export default function DresscodeSection() {
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
-
                 {/* Hover heart effect */}
                 <motion.div
                   className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -319,13 +319,13 @@ export default function DresscodeSection() {
             onClick={() => setExpandedCard(null)}
           >
             {/* Floating sparkles in modal */}
-            {[...Array(15)].map((_, i) => (
+            {modalSparklePositions.map((pos, i) => (
               <motion.div
                 key={`modal-sparkle-${i}`}
                 className="absolute text-[#c9a961]"
                 style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
+                  left: `${pos.left}%`,
+                  top: `${pos.top}%`,
                 }}
                 animate={{
                   scale: [0, 1, 0],
@@ -335,7 +335,7 @@ export default function DresscodeSection() {
                 transition={{
                   duration: 3,
                   repeat: Infinity,
-                  delay: Math.random() * 3,
+                  delay: pos.delay,
                   ease: "easeInOut"
                 }}
               >
@@ -373,8 +373,8 @@ export default function DresscodeSection() {
                       animate={{ scale: 1 }}
                       transition={{ duration: 0.6 }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#34453D] via-[#34453D]/40 to-transparent" />
-                    
+                    <div className="absolute inset-0 bg-linear-to-t from-[#34453D] via-[#34453D]/40 to-transparent" />
+                   
                     {/* Floating hearts in image */}
                     {[...Array(6)].map((_, i) => (
                       <motion.div
@@ -413,7 +413,6 @@ export default function DresscodeSection() {
                       <Sparkles size={16} className="text-white" />
                       <span className="text-white font-medium">{item.category}</span>
                     </motion.div>
-
                     <motion.h3
                       className="text-4xl md:text-5xl font-light text-[#34453D] mb-6"
                       initial={{ y: 20, opacity: 0 }}
@@ -422,7 +421,6 @@ export default function DresscodeSection() {
                     >
                       {item.title}
                     </motion.h3>
-
                     <motion.p
                       className="text-xl text-[#34453D]/70 font-light leading-relaxed"
                       initial={{ y: 20, opacity: 0 }}
