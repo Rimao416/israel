@@ -1,29 +1,62 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, MapPin, Users, QrCode, Navigation, Download, Gift, X, Plus } from 'lucide-react';
 import { useTable, useInviteInfo, useCadeaux } from '@/hooks/useInvite';
 import { CategorieCadeau, AppareilElectromenager } from '@/types/invite.types';
+import QRCodeStyling from 'qr-code-styling';
 
 export default function PracticalInfoSection() {
   const { tableNumero, tableNom } = useTable();
   const { nomComplet } = useInviteInfo();
   const { cadeaux, ajouterCadeau, supprimerCadeau, totalCadeaux, isLoading } = useCadeaux();
   
+  const qrRef = useRef(null);
+  const qrCodeRef = useRef(null);
   const [showGiftForm, setShowGiftForm] = useState(false);
-  const [giftForm, setGiftForm] = useState<{
-    categorie: CategorieCadeau | '';
-    appareilElectromenager: AppareilElectromenager | '';
-    description: string;
-    montantEspeces: string;
-    notes: string;
-  }>({
+  const [giftForm, setGiftForm] = useState({
     categorie: '',
     appareilElectromenager: '',
     description: '',
     montantEspeces: '',
     notes: ''
   });
+
+  // Générer le QR Code avec l'URL de confirmation
+  useEffect(() => {
+    if (qrRef.current && !qrCodeRef.current) {
+      const inviteId = window.location.pathname.split('/').pop();
+      
+      // URL de confirmation qui sera scannée
+      const confirmationUrl = `${window.location.origin}/confirmation/${inviteId}`;
+     
+      qrCodeRef.current = new QRCodeStyling({
+        width: 250,
+        height: 250,
+        data: confirmationUrl,
+        dotsOptions: {
+          color: "#34453D",
+          type: "rounded"
+        },
+        backgroundOptions: {
+          color: "#ffffff",
+        },
+        imageOptions: {
+          crossOrigin: "anonymous",
+          margin: 5
+        },
+        cornersSquareOptions: {
+          color: "#c9a961",
+          type: "extra-rounded"
+        },
+        cornersDotOptions: {
+          color: "#c9a961",
+          type: "dot"
+        }
+      });
+      qrCodeRef.current.append(qrRef.current);
+    }
+  }, []);
 
   const categories = [
     { value: CategorieCadeau.APPAREILS_ELECTROMENAGERS, label: 'Appareils électroménagers' },
@@ -42,15 +75,20 @@ export default function PracticalInfoSection() {
   ];
 
   const handleDownloadQR = () => {
-    console.log('Téléchargement du QR Code');
+    if (qrCodeRef.current) {
+      qrCodeRef.current.download({
+        name: `invitation-${nomComplet.replace(/\s+/g, '-')}`,
+        extension: "png"
+      });
+    }
   };
 
-  const handleSubmitGift = async (e: React.FormEvent) => {
+  const handleSubmitGift = async (e) => {
     e.preventDefault();
     
     if (!giftForm.categorie) return;
 
-    const cadeauData: any = {
+    const cadeauData = {
       categorie: giftForm.categorie,
     };
 
@@ -72,7 +110,6 @@ export default function PracticalInfoSection() {
 
     await ajouterCadeau(cadeauData);
     
-    // Reset form
     setGiftForm({
       categorie: '',
       appareilElectromenager: '',
@@ -83,11 +120,11 @@ export default function PracticalInfoSection() {
     setShowGiftForm(false);
   };
 
-  const getCategoryLabel = (categorie: CategorieCadeau) => {
+  const getCategoryLabel = (categorie) => {
     return categories.find(c => c.value === categorie)?.label || categorie;
   };
 
-  const getAppareilLabel = (appareil: AppareilElectromenager) => {
+  const getAppareilLabel = (appareil) => {
     return appareils.find(a => a.value === appareil)?.label || appareil;
   };
 
@@ -180,7 +217,7 @@ export default function PracticalInfoSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Tout ce qu{"'"}il vous faut savoir pour nous rejoindre
+            Tout ce qu'il vous faut savoir pour nous rejoindre
             <br />
             <span className="text-[#c9a961] italic">Nous avons hâte de vous accueillir</span>
           </motion.p>
@@ -206,7 +243,7 @@ export default function PracticalInfoSection() {
                     Lieu de la réception
                   </h3>
                   <p className="text-[#c9a961] font-light italic">
-                    Où notre histoire s{"'"}écrira
+                    Où notre histoire s'écrira
                   </p>
                 </div>
               </div>
@@ -215,6 +252,19 @@ export default function PracticalInfoSection() {
                 <p className="text-3xl font-light text-[#e8dcc4] text-center">
                   Salle des fêtes Zitouna
                 </p>
+              </div>
+
+              <div className="rounded-2xl overflow-hidden shadow-xl border-2 border-[#c9a961]/30 mb-6">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3193.4458414327496!2d10.123777610801003!3d36.83179706580309!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2stn!4v1764428694823!5m2!1sfr!2stn"
+                  width="100%"
+                  height="400"
+                  style={{ border: 0 }}
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full"
+                />
               </div>
 
               <motion.a
@@ -226,7 +276,7 @@ export default function PracticalInfoSection() {
                 whileTap={{ scale: 0.98 }}
               >
                 <Navigation size={20} />
-                <span>Obtenir l{"'"}itinéraire sur Google Maps</span>
+                <span>Obtenir l'itinéraire sur Google Maps</span>
               </motion.a>
             </div>
           </motion.div>
@@ -301,12 +351,13 @@ export default function PracticalInfoSection() {
               </div>
 
               <div className="flex flex-col items-center justify-center py-8">
-                <div className="bg-white p-4 rounded-2xl shadow-2xl w-[250px] h-[250px] flex items-center justify-center">
-                  <div className="text-[#34453D] text-sm text-center">QR Code<br/>Placeholder</div>
-                </div>
+                <div
+                  ref={qrRef}
+                  className="bg-white p-4 rounded-2xl shadow-2xl"
+                />
                 
                 <p className="mt-6 text-[#e8dcc4]/70 text-sm font-light text-center">
-                  Scannez ce code à l{"'"}entrée
+                  Scannez ce code à l'entrée
                 </p>
 
                 <motion.button
@@ -422,7 +473,7 @@ export default function PracticalInfoSection() {
                       </label>
                       <select
                         value={giftForm.categorie}
-                        onChange={(e) => setGiftForm({ ...giftForm, categorie: e.target.value as CategorieCadeau | '' })}
+                        onChange={(e) => setGiftForm({ ...giftForm, categorie: e.target.value })}
                         required
                         className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961]"
                       >
@@ -437,11 +488,11 @@ export default function PracticalInfoSection() {
                     {giftForm.categorie === CategorieCadeau.APPAREILS_ELECTROMENAGERS && (
                       <div>
                         <label className="block text-[#e8dcc4] mb-2 font-light">
-                          Type d{"'"}appareil *
+                          Type d'appareil *
                         </label>
                         <select
                           value={giftForm.appareilElectromenager}
-                          onChange={(e) => setGiftForm({ ...giftForm, appareilElectromenager: e.target.value as AppareilElectromenager | '' })}
+                          onChange={(e) => setGiftForm({ ...giftForm, appareilElectromenager: e.target.value })}
                           required
                           className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961]"
                         >
@@ -454,7 +505,7 @@ export default function PracticalInfoSection() {
                     )}
 
                     {/* Description pour meubles et ustensiles */}
-                    {([CategorieCadeau.MEUBLES, CategorieCadeau.USTENSILES_CUISINE].includes(giftForm.categorie as CategorieCadeau)) && (
+                    {([CategorieCadeau.MEUBLES, CategorieCadeau.USTENSILES_CUISINE].includes(giftForm.categorie)) && (
                       <div>
                         <label className="block text-[#e8dcc4] mb-2 font-light">
                           Description *
