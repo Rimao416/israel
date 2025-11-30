@@ -1,8 +1,7 @@
 "use client"
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Sparkles } from 'lucide-react';
-import Image from 'next/image';
 
 type PhotoSize = 'small' | 'medium' | 'large';
 
@@ -15,23 +14,25 @@ interface Photo {
   size: PhotoSize;
 }
 
-// Generate random positions outside the component
-const generateRandomPositions = (count: number) => {
-  return Array.from({ length: count }, (_, i) => ({
-    left: Math.random() * 100,
-    top: Math.random() * 100,
-    index: i
-  }));
-};
+// Réduit de 12 à 5 hearts
+const BACKGROUND_HEARTS = Array.from({ length: 5 }, (_, i) => ({
+  left: 20 + i * 20,
+  top: 10 + (i % 3) * 30,
+  index: i
+}));
 
-const BACKGROUND_HEARTS = generateRandomPositions(12);
-const SPARKLE_POSITIONS = generateRandomPositions(20);
+// Réduit de 20 à 6 sparkles
+const SPARKLE_POSITIONS = Array.from({ length: 6 }, (_, i) => ({
+  left: 15 + i * 15,
+  top: 15 + (i % 2) * 40,
+  index: i
+}));
 
 export default function PhotosSection() {
   const photos: Photo[] = [
     {
       id: 1,
-      url: "couple_1.jpeg",
+      url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=400",
       alt: "Couple enlacé",
       rotation: -8,
       delay: 0,
@@ -39,42 +40,42 @@ export default function PhotosSection() {
     },
     {
       id: 2,
-      url: "couple_2.jpeg",
+      url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=400",
       alt: "Moment tendre",
       rotation: 5,
-      delay: 0.2,
+      delay: 0.1,
       size: "medium"
     },
     {
       id: 3,
-      url: "couple_5.jpeg",
+      url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400",
       alt: "Rires partagés",
       rotation: -12,
-      delay: 0.4,
+      delay: 0.2,
       size: "large"
     },
     {
       id: 4,
-      url: "couple_3.jpeg",
+      url: "https://images.unsplash.com/photo-1525772764200-be829a350797?w=400",
       alt: "Complicité",
       rotation: 10,
-      delay: 0.6,
+      delay: 0.3,
       size: "small"
     },
     {
       id: 5,
-      url: "couple_4.jpeg",
+      url: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400",
       alt: "Tendresse",
       rotation: -6,
-      delay: 0.8,
+      delay: 0.4,
       size: "medium"
     },
     {
       id: 6,
-      url: "main.jpeg",
+      url: "https://images.unsplash.com/photo-1519741497674-611481863552?w=400",
       alt: "Amour éternel",
       rotation: 8,
-      delay: 1,
+      delay: 0.5,
       size: "large"
     }
   ];
@@ -94,7 +95,7 @@ export default function PhotosSection() {
 
   return (
     <div className="min-h-screen bg-[#d4c5a0] relative overflow-hidden py-20 px-4 sm:px-6 lg:px-12">
-      {/* Background Hearts */}
+      {/* Background Hearts - Réduit et simplifié */}
       {BACKGROUND_HEARTS.map((heart) => (
         <motion.div
           key={`bg-heart-${heart.index}`}
@@ -104,21 +105,19 @@ export default function PhotosSection() {
             top: `${heart.top}%`,
           }}
           animate={{
-            scale: [1, 1.5, 1],
-            rotate: [0, 180, 360],
             opacity: [0.05, 0.15, 0.05],
           }}
           transition={{
-            duration: 8 + heart.index,
+            duration: 10,
             repeat: Infinity,
             delay: heart.index * 0.5,
           }}
         >
-          <Heart size={40 + heart.index * 5} fill="currentColor" />
+          <Heart size={40} fill="currentColor" />
         </motion.div>
       ))}
 
-      {/* Floating Sparkles */}
+      {/* Floating Sparkles - Réduit */}
       {SPARKLE_POSITIONS.map((sparkle) => (
         <motion.div
           key={`sparkle-${sparkle.index}`}
@@ -128,14 +127,12 @@ export default function PhotosSection() {
             top: `${sparkle.top}%`,
           }}
           animate={{
-            y: [0, -30, 0],
-            opacity: [0, 1, 0],
-            scale: [0, 1, 0],
+            opacity: [0, 0.5, 0],
           }}
           transition={{
-            duration: 3,
+            duration: 4,
             repeat: Infinity,
-            delay: sparkle.index * 0.3,
+            delay: sparkle.index * 0.5,
           }}
         >
           <Sparkles size={16} />
@@ -150,25 +147,14 @@ export default function PhotosSection() {
         viewport={{ once: true }}
         transition={{ duration: 1 }}
       >
-        <motion.div
-          className="inline-block"
-          animate={{
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-          }}
-        >
-          <Heart size={40} className="text-[#c9a961] mx-auto mb-4" fill="currentColor" />
-        </motion.div>
+        <Heart size={40} className="text-[#c9a961] mx-auto mb-4" fill="currentColor" />
        
         <motion.h2
           className="text-4xl sm:text-5xl lg:text-6xl font-light text-[#34453D] mb-4 px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.3 }}
+          transition={{ duration: 1 }}
         >
           Notre Histoire
         </motion.h2>
@@ -178,7 +164,7 @@ export default function PhotosSection() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.5 }}
+          transition={{ duration: 1, delay: 0.2 }}
         >
           Chaque instant partagé, chaque sourire échangé, chaque battement de cœur synchronisé
         </motion.p>
@@ -214,102 +200,39 @@ export default function PhotosSection() {
                 marginTop: index % 3 === 1 ? '40px' : '0'
               }}
             >
-              {/* Polaroid Frame */}
-              <motion.div
-                className="bg-white p-4 pb-16 shadow-2xl relative"
-                animate={{
-                  y: [0, -10, 0],
-                }}
-                transition={{
-                  duration: 4 + index,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
+              {/* Polaroid Frame - Animation supprimée */}
+              <div className="bg-white p-4 pb-16 shadow-2xl relative">
                 {/* Photo */}
                 <div className="relative overflow-hidden bg-gray-200 aspect-3/4">
-                  <Image
+                  <img
                     src={photo.url}
                     alt={photo.alt}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    unoptimized
+                    className="w-full h-full object-cover"
                   />
                  
                   {/* Hover Overlay */}
-                  <motion.div
-                    className="absolute inset-0 bg-linear-to-t from-[#c9a961]/80 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"
-                    whileHover={{ opacity: 1 }}
-                  >
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#c9a961]/80 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
                     <p className="text-white font-light text-lg">{photo.alt}</p>
-                  </motion.div>
+                  </div>
                 </div>
 
                 {/* Handwritten Note */}
-                <motion.div
-                  className="absolute bottom-4 left-4 right-4 text-center"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: photo.delay + 0.5 }}
-                >
+                <div className="absolute bottom-4 left-4 right-4 text-center">
                   <p className="text-[#34453D]/60 font-light text-xl">
                     {photo.alt}
                   </p>
-                </motion.div>
+                </div>
 
-                {/* Corner Heart */}
-                <motion.div
-                  className="absolute -top-3 -right-3 w-10 h-10 bg-[#c9a961] rounded-full flex items-center justify-center shadow-lg"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 10, -10, 0]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: index * 0.3
-                  }}
-                >
+                {/* Corner Heart - Statique */}
+                <div className="absolute -top-3 -right-3 w-10 h-10 bg-[#c9a961] rounded-full flex items-center justify-center shadow-lg">
                   <Heart size={18} fill="white" className="text-white" />
-                </motion.div>
+                </div>
 
                 {/* Tape Effect */}
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-20 h-8 bg-[#e8dcc4]/50 rotate-[-5deg] shadow-sm"></div>
-              </motion.div>
+              </div>
 
-              {/* Floating Hearts around photo */}
-              <motion.div
-                className="absolute -top-6 -left-6 text-[#c9a961]/40"
-                animate={{
-                  y: [0, -20, 0],
-                  rotate: [0, 360],
-                  opacity: [0.3, 0.7, 0.3]
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  delay: index * 0.5
-                }}
-              >
-                <Heart size={24} fill="currentColor" />
-              </motion.div>
-
-              <motion.div
-                className="absolute -bottom-6 -right-6 text-[#c9a961]/40"
-                animate={{
-                  y: [0, 20, 0],
-                  rotate: [0, -360],
-                  opacity: [0.3, 0.7, 0.3]
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  delay: index * 0.7
-                }}
-              >
-                <Heart size={20} fill="currentColor" />
-              </motion.div>
+              {/* Floating Hearts - Supprimés pour performances */}
             </motion.div>
           ))}
         </div>
@@ -321,20 +244,11 @@ export default function PhotosSection() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.5 }}
+        transition={{ duration: 1 }}
       >
-        <motion.p
-          className="text-xl sm:text-2xl lg:text-3xl text-[#34453D] font-light italic"
-          animate={{
-            opacity: [0.7, 1, 0.7]
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity
-          }}
-        >
+        <p className="text-xl sm:text-2xl lg:text-3xl text-[#34453D] font-light italic">
           Et ce n&apos;est que le début de notre aventure...
-        </motion.p>
+        </p>
       </motion.div>
     </div>
   );

@@ -41,7 +41,6 @@ export default function DrinksSection() {
       }
     });
     
-    // Réinitialiser le message de succès quand on modifie
     setSaveSuccess(false);
   };
 
@@ -51,7 +50,6 @@ export default function DrinksSection() {
     setSaveSuccess(false);
 
     try {
-      // Toutes les boissons ont une quantité de 1
       const preferences = selectedDrinks.map(drinkId => ({
         boisson: drinkId as TypeBoisson,
         quantite: 1
@@ -60,7 +58,6 @@ export default function DrinksSection() {
       await saveBoissonPreferences(preferences);
       setSaveSuccess(true);
 
-      // Cacher le message de succès après 3 secondes
       setTimeout(() => {
         setSaveSuccess(false);
       }, 3000);
@@ -72,7 +69,6 @@ export default function DrinksSection() {
     }
   };
 
-  // Vérifier si les préférences ont changé
   const hasChanges = () => {
     if (boissons.length !== selectedDrinks.length) return true;
     
@@ -84,30 +80,20 @@ export default function DrinksSection() {
     return false;
   };
 
-  // Sparkles positions
-  const [sparklePositions] = useState(() =>
-    Array.from({ length: 15 }, () => ({
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 4
-    }))
-  );
 
   return (
     <div className="min-h-screen bg-[#34453D] relative overflow-hidden py-20 px-6 font-['Montserrat']">
-      {/* Animated Background Orbs */}
+      {/* Animated Background Orbs - Simplifiés */}
       <motion.div
         className="absolute top-20 right-20 w-[450px] h-[450px] rounded-full blur-3xl"
         style={{
           background: 'radial-gradient(circle, rgba(201,169,97,0.15) 0%, transparent 70%)'
         }}
         animate={{
-          scale: [1, 1.3, 1],
-          x: [0, -40, 0],
-          y: [0, 50, 0],
+          scale: [1, 1.2, 1],
         }}
         transition={{
-          duration: 14,
+          duration: 18,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -120,60 +106,32 @@ export default function DrinksSection() {
         }}
         animate={{
           scale: [1.2, 1, 1.2],
-          x: [0, 60, 0],
-          y: [0, -40, 0],
         }}
         transition={{
-          duration: 16,
+          duration: 20,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       />
 
-      {/* Floating Sparkles */}
-      {sparklePositions.map((pos, i) => (
-        <motion.div
-          key={`sparkle-${i}`}
-          className="absolute text-[#c9a961]"
-          style={{
-            left: `${pos.left}%`,
-            top: `${pos.top}%`,
-          }}
-          animate={{
-            scale: [0, 1, 0],
-            opacity: [0, 0.7, 0],
-            rotate: [0, 180],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            delay: pos.delay,
-            ease: "easeInOut"
-          }}
-        >
-          <Sparkles size={12} />
-        </motion.div>
-      ))}
 
-      {/* Floating Hearts */}
-      {[...Array(6)].map((_, i) => (
+      {/* Floating Hearts - Réduit de 6 à 3 */}
+      {[...Array(3)].map((_, i) => (
         <motion.div
           key={`heart-${i}`}
           className="absolute text-[#c9a961]/15"
           style={{
-            left: `${15 + i * 15}%`,
+            left: `${25 + i * 25}%`,
             bottom: '-10%',
           }}
           animate={{
             y: [-50, -1000],
-            x: [0, Math.sin(i * 2) * 100],
-            rotate: [0, 360],
-            opacity: [0, 0.5, 0],
+            opacity: [0, 0.4, 0],
           }}
           transition={{
-            duration: 9 + i * 1.5,
+            duration: 12,
             repeat: Infinity,
-            delay: i * 1.5,
+            delay: i * 2,
             ease: "linear"
           }}
         >
@@ -182,7 +140,7 @@ export default function DrinksSection() {
       ))}
 
       <div className="max-w-5xl mx-auto relative z-10">
-        {/* Header */}
+        {/* Header - Animations simplifiées */}
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -190,51 +148,18 @@ export default function DrinksSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.div
-            className="inline-flex items-center gap-3 mb-6"
-            animate={{
-              y: [0, -10, 0]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          >
-            <motion.div
-              animate={{
-                rotate: [0, 15, -15, 0]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <Wine size={48} className="text-[#c9a961]" />
-            </motion.div>
+          <div className="inline-flex items-center gap-3 mb-6">
+            <Wine size={48} className="text-[#c9a961]" />
             <Heart size={40} className="text-[#c9a961]" fill="currentColor" />
-            <motion.div
-              animate={{
-                rotate: [0, -15, 15, 0]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.5
-              }}
-            >
-              <Wine size={48} className="text-[#c9a961]" />
-            </motion.div>
-          </motion.div>
+            <Wine size={48} className="text-[#c9a961]" />
+          </div>
 
           <motion.h2
             className="text-4xl md:text-5xl lg:text-6xl font-light text-[#e8dcc4] mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8 }}
           >
             Vos boissons préférées
           </motion.h2>
@@ -245,7 +170,7 @@ export default function DrinksSection() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
             >
               {prenom}, faites-nous savoir vos préférences
             </motion.p>
@@ -256,7 +181,7 @@ export default function DrinksSection() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
           >
             Pour vous faire plaisir, choisissez vos boissons favorites
             <br />
@@ -293,7 +218,7 @@ export default function DrinksSection() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.8 }}
         >
           {drinks.map((drink, index) => {
             const isSelected = selectedDrinks.includes(drink.id);
@@ -311,22 +236,17 @@ export default function DrinksSection() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
-                whileHover={{ scale: 1.03, y: -5 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
                 {/* Glow Effect */}
                 {isSelected && (
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
                 )}
 
-                {/* Sparkle Effect on Selection */}
-                {isSelected && [...Array(8)].map((_, i) => (
+                {/* Sparkle Effect - Réduit de 8 à 3 */}
+                {isSelected && [...Array(3)].map((_, i) => (
                   <motion.div
                     key={`sparkle-drink-${drink.id}-${i}`}
                     className="absolute text-white"
@@ -338,13 +258,12 @@ export default function DrinksSection() {
                     animate={{
                       opacity: [0, 1, 0],
                       scale: [0, 1, 0],
-                      x: [0, (Math.random() - 0.5) * 150],
-                      y: [0, (Math.random() - 0.5) * 150],
-                      rotate: [0, Math.random() * 360],
+                      x: [0, (Math.random() - 0.5) * 100],
+                      y: [0, (Math.random() - 0.5) * 100],
                     }}
                     transition={{
-                      duration: 1,
-                      delay: i * 0.05,
+                      duration: 0.8,
+                      delay: i * 0.1,
                       ease: "easeOut"
                     }}
                   >
@@ -354,22 +273,11 @@ export default function DrinksSection() {
 
                 <div className="relative z-10 flex items-center gap-6">
                   {/* Icon Container */}
-                  <motion.div
-                    className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl ${
-                      isSelected ? 'bg-white/90' : 'bg-[#c9a961]/20'
-                    }`}
-                    animate={isSelected ? {
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 10, -10, 0]
-                    } : {}}
-                    transition={{
-                      duration: 0.6,
-                      repeat: isSelected ? Infinity : 0,
-                      repeatDelay: 1
-                    }}
-                  >
+                  <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl ${
+                    isSelected ? 'bg-white/90' : 'bg-[#c9a961]/20'
+                  }`}>
                     {drink.icon}
-                  </motion.div>
+                  </div>
 
                   {/* Drink Name */}
                   <div className="flex-1 text-left">
@@ -381,17 +289,9 @@ export default function DrinksSection() {
                   </div>
 
                   {/* Check Icon */}
-                  <motion.div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      isSelected ? 'bg-white' : 'bg-[#c9a961]/20'
-                    }`}
-                    animate={isSelected ? {
-                      scale: [1, 1.2, 1],
-                    } : {}}
-                    transition={{
-                      duration: 0.3
-                    }}
-                  >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    isSelected ? 'bg-white' : 'bg-[#c9a961]/20'
+                  }`}>
                     {isSelected && (
                       <motion.div
                         initial={{ scale: 0, rotate: -90 }}
@@ -405,7 +305,7 @@ export default function DrinksSection() {
                         <Check size={24} className="text-[#c9a961]" strokeWidth={3} />
                       </motion.div>
                     )}
-                  </motion.div>
+                  </div>
                 </div>
               </motion.button>
             );
@@ -417,24 +317,9 @@ export default function DrinksSection() {
           className="text-center space-y-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.5 }}
         >
-          <motion.div
-            className="inline-flex items-center gap-3 bg-[#3d5248]/60 backdrop-blur-sm border border-[#c9a961]/30 rounded-full px-8 py-4"
-            animate={{
-              boxShadow: selectedDrinks.length > 0
-                ? [
-                    '0 0 20px rgba(201, 169, 97, 0.2)',
-                    '0 0 30px rgba(201, 169, 97, 0.4)',
-                    '0 0 20px rgba(201, 169, 97, 0.2)',
-                  ]
-                : []
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity
-            }}
-          >
+          <div className="inline-flex items-center gap-3 bg-[#3d5248]/60 backdrop-blur-sm border border-[#c9a961]/30 rounded-full px-8 py-4">
             <Heart
               size={20}
               className={selectedDrinks.length > 0 ? 'text-[#c9a961]' : 'text-[#e8dcc4]/50'}
@@ -448,7 +333,7 @@ export default function DrinksSection() {
                 : `${selectedDrinks.length} boissons sélectionnées`
               }
             </span>
-          </motion.div>
+          </div>
 
           {/* Save Button */}
           {hasChanges() && (
@@ -485,56 +370,22 @@ export default function DrinksSection() {
         </motion.div>
       </div>
 
-      {/* Decorative pattern dots */}
-      <motion.div
-        className="absolute top-1/4 left-10 opacity-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.5 }}
-      >
+      {/* Decorative dots - Statiques */}
+      <div className="absolute top-1/4 left-10 opacity-20">
         <div className="grid grid-cols-3 gap-3">
           {[...Array(9)].map((_, i) => (
-            <motion.div
-              key={`dot-left-${i}`}
-              className="w-1.5 h-1.5 bg-[#c9a961] rounded-full"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: i * 0.2
-              }}
-            />
+            <div key={`dot-left-${i}`} className="w-1.5 h-1.5 bg-[#c9a961] rounded-full" />
           ))}
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        className="absolute bottom-1/4 right-10 opacity-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.7 }}
-      >
+      <div className="absolute bottom-1/4 right-10 opacity-20">
         <div className="grid grid-cols-3 gap-3">
           {[...Array(9)].map((_, i) => (
-            <motion.div
-              key={`dot-right-${i}`}
-              className="w-1.5 h-1.5 bg-[#c9a961] rounded-full"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: i * 0.2 + 0.5
-              }}
-            />
+            <div key={`dot-right-${i}`} className="w-1.5 h-1.5 bg-[#c9a961] rounded-full" />
           ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

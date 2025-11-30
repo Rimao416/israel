@@ -51,14 +51,6 @@ export default function DresscodeSection() {
   }
 ];
 
-  // Sparkles positions - useState pour éviter la regénération à chaque render
-  const [sparklePositions] = useState(() =>
-    Array.from({ length: 20 }, () => ({
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 4
-    }))
-  );
 
   // Positions pour les sparkles du modal
   const [modalSparklePositions] = useState(() =>
@@ -105,30 +97,6 @@ export default function DresscodeSection() {
         }}
       />
 
-      {/* Floating Sparkles */}
-      {sparklePositions.map((pos, i) => (
-        <motion.div
-          key={`sparkle-${i}`}
-          className="absolute text-[#c9a961]"
-          style={{
-            left: `${pos.left}%`,
-            top: `${pos.top}%`,
-          }}
-          animate={{
-            scale: [0, 1, 0],
-            opacity: [0, 0.7, 0],
-            rotate: [0, 180],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            delay: pos.delay,
-            ease: "easeInOut"
-          }}
-        >
-          <Sparkles size={12} />
-        </motion.div>
-      ))}
 
       {/* Floating Hearts */}
       {[...Array(8)].map((_, i) => (

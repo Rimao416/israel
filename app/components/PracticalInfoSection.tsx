@@ -1,84 +1,109 @@
 "use client"
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, Sparkles, MapPin, Users, QrCode, Navigation, Download } from 'lucide-react';
-import { useTable, useInviteInfo } from '@/hooks/useInvite';
-import QRCodeStyling from 'qr-code-styling';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, Sparkles, MapPin, Users, QrCode, Navigation, Download, Gift, X, Plus } from 'lucide-react';
+import { useTable, useInviteInfo, useCadeaux } from '@/hooks/useInvite';
+import { CategorieCadeau, AppareilElectromenager } from '@/types/invite.types';
 
 export default function PracticalInfoSection() {
-  const { table, tableNumero, tableNom } = useTable();
+  const { tableNumero, tableNom } = useTable();
   const { nomComplet } = useInviteInfo();
-  const qrRef = useRef<HTMLDivElement>(null);
-  const qrCodeRef = useRef<QRCodeStyling | null>(null);
+  const { cadeaux, ajouterCadeau, supprimerCadeau, totalCadeaux, isLoading } = useCadeaux();
+  
+  const [showGiftForm, setShowGiftForm] = useState(false);
+  const [giftForm, setGiftForm] = useState<{
+    categorie: CategorieCadeau | '';
+    appareilElectromenager: AppareilElectromenager | '';
+    description: string;
+    montantEspeces: string;
+    notes: string;
+  }>({
+    categorie: '',
+    appareilElectromenager: '',
+    description: '',
+    montantEspeces: '',
+    notes: ''
+  });
 
-  const [sparklePositions] = useState(() =>
-    Array.from({ length: 20 }, () => ({
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 4
-    }))
-  );
+  const categories = [
+    { value: CategorieCadeau.APPAREILS_ELECTROMENAGERS, label: 'Appareils électroménagers' },
+    { value: CategorieCadeau.MEUBLES, label: 'Meubles' },
+    { value: CategorieCadeau.USTENSILES_CUISINE, label: 'Ustensiles de cuisine' },
+    { value: CategorieCadeau.DONS_ESPECES, label: 'Don en espèces' }
+  ];
 
-  // Générer le QR Code avec l'URL de confirmation
-  useEffect(() => {
-    if (qrRef.current && !qrCodeRef.current) {
-      const inviteId = window.location.pathname.split('/').pop();
-      
-      // URL de confirmation qui sera scannée
-      const confirmationUrl = `${window.location.origin}/confirmation/${inviteId}`;
-     
-      qrCodeRef.current = new QRCodeStyling({
-        width: 250,
-        height: 250,
-        data: confirmationUrl, // L'URL directe de confirmation
-        dotsOptions: {
-          color: "#34453D",
-          type: "rounded"
-        },
-        backgroundOptions: {
-          color: "#ffffff",
-        },
-        imageOptions: {
-          crossOrigin: "anonymous",
-          margin: 5
-        },
-        cornersSquareOptions: {
-          color: "#c9a961",
-          type: "extra-rounded"
-        },
-        cornersDotOptions: {
-          color: "#c9a961",
-          type: "dot"
-        }
-      });
-      qrCodeRef.current.append(qrRef.current);
-    }
-  }, []);
+  const appareils = [
+    { value: AppareilElectromenager.AIR_FRYER, label: 'Air Fryer' },
+    { value: AppareilElectromenager.MACHINE_A_LAVER, label: 'Machine à laver' },
+    { value: AppareilElectromenager.FRIGO, label: 'Réfrigérateur' },
+    { value: AppareilElectromenager.MIXEUR, label: 'Mixeur' },
+    { value: AppareilElectromenager.TELEVISION, label: 'Télévision' },
+    { value: AppareilElectromenager.MINI_FOUR_ELECTRIQUE, label: 'Mini four électrique' }
+  ];
 
   const handleDownloadQR = () => {
-    if (qrCodeRef.current) {
-      qrCodeRef.current.download({
-        name: `invitation-${nomComplet.replace(/\s+/g, '-')}`,
-        extension: "png"
-      });
+    console.log('Téléchargement du QR Code');
+  };
+
+  const handleSubmitGift = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!giftForm.categorie) return;
+
+    const cadeauData: any = {
+      categorie: giftForm.categorie,
+    };
+
+    if (giftForm.categorie === CategorieCadeau.APPAREILS_ELECTROMENAGERS && giftForm.appareilElectromenager) {
+      cadeauData.appareilElectromenager = giftForm.appareilElectromenager;
     }
+
+    if (giftForm.categorie === CategorieCadeau.DONS_ESPECES && giftForm.montantEspeces) {
+      cadeauData.montantEspeces = parseFloat(giftForm.montantEspeces);
+    }
+
+    if ([CategorieCadeau.MEUBLES, CategorieCadeau.USTENSILES_CUISINE].includes(giftForm.categorie) && giftForm.description) {
+      cadeauData.description = giftForm.description;
+    }
+
+    if (giftForm.notes) {
+      cadeauData.notes = giftForm.notes;
+    }
+
+    await ajouterCadeau(cadeauData);
+    
+    // Reset form
+    setGiftForm({
+      categorie: '',
+      appareilElectromenager: '',
+      description: '',
+      montantEspeces: '',
+      notes: ''
+    });
+    setShowGiftForm(false);
+  };
+
+  const getCategoryLabel = (categorie: CategorieCadeau) => {
+    return categories.find(c => c.value === categorie)?.label || categorie;
+  };
+
+  const getAppareilLabel = (appareil: AppareilElectromenager) => {
+    return appareils.find(a => a.value === appareil)?.label || appareil;
   };
 
   return (
     <div className="min-h-screen bg-[#34453D] relative overflow-hidden py-20 px-6 font-['Montserrat']">
-      {/* Animated Background Orbs */}
+      {/* Background Orbs */}
       <motion.div
         className="absolute top-32 left-20 w-[500px] h-[500px] rounded-full blur-3xl"
         style={{
           background: 'radial-gradient(circle, rgba(201,169,97,0.15) 0%, transparent 70%)'
         }}
         animate={{
-          scale: [1, 1.3, 1],
-          x: [0, 50, 0],
-          y: [0, -40, 0],
+          scale: [1, 1.2, 1],
         }}
         transition={{
-          duration: 16,
+          duration: 20,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -91,60 +116,31 @@ export default function PracticalInfoSection() {
         }}
         animate={{
           scale: [1.2, 1, 1.2],
-          x: [0, -60, 0],
-          y: [0, 50, 0],
         }}
         transition={{
-          duration: 18,
+          duration: 22,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       />
 
-      {/* Floating Sparkles */}
-      {sparklePositions.map((pos, i) => (
-        <motion.div
-          key={`sparkle-${i}`}
-          className="absolute text-[#c9a961]"
-          style={{
-            left: `${pos.left}%`,
-            top: `${pos.top}%`,
-          }}
-          animate={{
-            scale: [0, 1, 0],
-            opacity: [0, 0.7, 0],
-            rotate: [0, 180],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            delay: pos.delay,
-            ease: "easeInOut"
-          }}
-        >
-          <Sparkles size={12} />
-        </motion.div>
-      ))}
-
-      {/* Floating Hearts */}
-      {[...Array(8)].map((_, i) => (
+      {/* Hearts */}
+      {[...Array(4)].map((_, i) => (
         <motion.div
           key={`heart-${i}`}
           className="absolute text-[#c9a961]/15"
           style={{
-            left: `${10 + i * 12}%`,
+            left: `${15 + i * 20}%`,
             bottom: '-10%',
           }}
           animate={{
             y: [-50, -1000],
-            x: [0, Math.sin(i * 2) * 90],
-            rotate: [0, 360],
-            opacity: [0, 0.5, 0],
+            opacity: [0, 0.4, 0],
           }}
           transition={{
-            duration: 10 + i * 1.5,
+            duration: 12 + i * 2,
             repeat: Infinity,
-            delay: i * 1.3,
+            delay: i * 2,
             ease: "linear"
           }}
         >
@@ -161,50 +157,18 @@ export default function PracticalInfoSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.div
-            className="inline-flex items-center gap-3 mb-6"
-            animate={{
-              y: [0, -8, 0]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          >
-            <motion.div
-              animate={{
-                rotate: [0, 10, -10, 0]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <MapPin size={48} className="text-[#c9a961]" strokeWidth={1.5} />
-            </motion.div>
+          <div className="inline-flex items-center gap-3 mb-6">
+            <MapPin size={48} className="text-[#c9a961]" strokeWidth={1.5} />
             <Heart size={40} className="text-[#c9a961]" fill="currentColor" />
-            <motion.div
-              animate={{
-                scale: [1, 1.2, 1]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <Sparkles size={48} className="text-[#c9a961]" />
-            </motion.div>
-          </motion.div>
+            <Sparkles size={48} className="text-[#c9a961]" />
+          </div>
           
           <motion.h2
             className="text-4xl md:text-5xl lg:text-6xl font-light text-[#e8dcc4] mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8 }}
           >
             Informations Pratiques
           </motion.h2>
@@ -214,7 +178,7 @@ export default function PracticalInfoSection() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
             Tout ce qu{"'"}il vous faut savoir pour nous rejoindre
             <br />
@@ -230,27 +194,13 @@ export default function PracticalInfoSection() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8 }}
           >
             <div className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl hover:border-[#c9a961]/50 transition-all duration-300">
               <div className="flex items-center gap-4 mb-6">
-                <motion.div
-                  className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center"
-                  animate={{
-                    boxShadow: [
-                      '0 0 20px rgba(201, 169, 97, 0.3)',
-                      '0 0 30px rgba(201, 169, 97, 0.6)',
-                      '0 0 20px rgba(201, 169, 97, 0.3)',
-                    ]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
+                <div className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center">
                   <MapPin size={32} className="text-white" strokeWidth={2} />
-                </motion.div>
+                </div>
                 <div>
                   <h3 className="text-2xl font-medium text-[#e8dcc4] mb-1">
                     Lieu de la réception
@@ -261,42 +211,22 @@ export default function PracticalInfoSection() {
                 </div>
               </div>
 
-              <motion.div
-                className="bg-[#c9a961]/10 rounded-2xl p-6 mb-6 border border-[#c9a961]/20"
-                whileHover={{ scale: 1.01 }}
-              >
+              <div className="bg-[#c9a961]/10 rounded-2xl p-6 mb-6 border border-[#c9a961]/20">
                 <p className="text-3xl font-light text-[#e8dcc4] text-center">
                   Salle des fêtes Zitouna
                 </p>
-              </motion.div>
-
-              <motion.div
-                className="rounded-2xl overflow-hidden shadow-xl border-2 border-[#c9a961]/30"
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.3 }}
-              >
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3193.4458414327496!2d10.123777610801003!3d36.83179706580309!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2stn!4v1764428694823!5m2!1sfr!2stn"
-                  width="100%"
-                  height="400"
-                  style={{ border: 0 }}
-                  allowFullScreen={true}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full"
-                />
-              </motion.div>
+              </div>
 
               <motion.a
                 href="https://www.google.com/maps/place/36.83179706580309,10.123777610801003"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 w-full py-4 bg-[#c9a961] text-white font-medium rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 hover:shadow-xl"
-                whileHover={{ scale: 1.02, y: -2 }}
+                className="w-full py-4 bg-[#c9a961] text-white font-medium rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 hover:shadow-xl"
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Navigation size={20} />
-                <span>Obtenir l{"'"}itinéraire</span>
+                <span>Obtenir l{"'"}itinéraire sur Google Maps</span>
               </motion.a>
             </div>
           </motion.div>
@@ -306,26 +236,13 @@ export default function PracticalInfoSection() {
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8 }}
           >
-            <motion.div
-              className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl h-full hover:border-[#c9a961]/50 transition-all duration-300"
-              whileHover={{ scale: 1.02, y: -5 }}
-            >
+            <div className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl h-full hover:border-[#c9a961]/50 transition-all duration-300">
               <div className="flex items-center gap-4 mb-8">
-                <motion.div
-                  className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center"
-                  animate={{
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
+                <div className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center">
                   <Users size={32} className="text-white" strokeWidth={2} />
-                </motion.div>
+                </div>
                 <div>
                   <h3 className="text-2xl font-medium text-[#e8dcc4] mb-1">
                     Votre table
@@ -337,89 +254,28 @@ export default function PracticalInfoSection() {
               </div>
 
               <div className="flex flex-col items-center justify-center py-12">
-                <motion.div
-                  className="relative"
-                  animate={{
-                    y: [0, -10, 0]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <motion.div
-                    className="absolute inset-0 rounded-full border-2 border-[#c9a961]/30"
-                    animate={{
-                      scale: [1, 1.2],
-                      opacity: [0.5, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeOut"
-                    }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 rounded-full border-2 border-[#c9a961]/30"
-                    animate={{
-                      scale: [1, 1.2],
-                      opacity: [0.5, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeOut",
-                      delay: 1
-                    }}
-                  />
+                <div className="relative">
                   <div className="relative bg-[#c9a961] w-32 h-32 rounded-full flex items-center justify-center shadow-2xl">
                     <div className="text-center">
                       <p className="text-white/70 text-sm font-light mb-1">Table</p>
                       <p className="text-white text-5xl font-light">{tableNumero || '?'}</p>
                     </div>
                   </div>
-                </motion.div>
+                </div>
                
                 {tableNom && (
-                  <motion.div
-                    className="mt-8 bg-[#c9a961]/10 px-8 py-4 rounded-full border border-[#c9a961]/30"
-                    animate={{
-                      boxShadow: [
-                        '0 0 20px rgba(201, 169, 97, 0.2)',
-                        '0 0 30px rgba(201, 169, 97, 0.4)',
-                        '0 0 20px rgba(201, 169, 97, 0.2)',
-                      ]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity
-                    }}
-                  >
+                  <div className="mt-8 bg-[#c9a961]/10 px-8 py-4 rounded-full border border-[#c9a961]/30">
                     <p className="text-[#e8dcc4] text-2xl font-light">{tableNom}</p>
-                  </motion.div>
+                  </div>
                 )}
               </div>
 
               <div className="flex items-center justify-center gap-2 mt-6">
                 {[...Array(5)].map((_, i) => (
-                  <motion.div
-                    key={`table-heart-${i}`}
-                    animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [0.3, 0.7, 0.3]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: i * 0.2
-                    }}
-                  >
-                    <Heart size={10 + i * 2} className="text-[#c9a961]" fill="currentColor" />
-                  </motion.div>
+                  <Heart key={`table-heart-${i}`} size={10 + i * 2} className="text-[#c9a961] opacity-50" fill="currentColor" />
                 ))}
               </div>
-            </motion.div>
+            </div>
           </motion.div>
 
           {/* QR Code */}
@@ -427,26 +283,13 @@ export default function PracticalInfoSection() {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8 }}
           >
-            <motion.div
-              className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl h-full hover:border-[#c9a961]/50 transition-all duration-300"
-              whileHover={{ scale: 1.02, y: -5 }}
-            >
+            <div className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl h-full hover:border-[#c9a961]/50 transition-all duration-300">
               <div className="flex items-center gap-4 mb-8">
-                <motion.div
-                  className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center"
-                  animate={{
-                    scale: [1, 1.1, 1]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
+                <div className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center">
                   <QrCode size={32} className="text-white" strokeWidth={2} />
-                </motion.div>
+                </div>
                 <div>
                   <h3 className="text-2xl font-medium text-[#e8dcc4] mb-1">
                     Votre invitation
@@ -458,43 +301,18 @@ export default function PracticalInfoSection() {
               </div>
 
               <div className="flex flex-col items-center justify-center py-8">
-                <motion.div
-                  className="relative"
-                  animate={{
-                    boxShadow: [
-                      '0 0 30px rgba(201, 169, 97, 0.3)',
-                      '0 0 50px rgba(201, 169, 97, 0.5)',
-                      '0 0 30px rgba(201, 169, 97, 0.3)',
-                    ]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }}
-                >
-                  <div
-                    ref={qrRef}
-                    className="bg-white p-4 rounded-2xl shadow-2xl"
-                  />
-                </motion.div>
+                <div className="bg-white p-4 rounded-2xl shadow-2xl w-[250px] h-[250px] flex items-center justify-center">
+                  <div className="text-[#34453D] text-sm text-center">QR Code<br/>Placeholder</div>
+                </div>
                 
-                <motion.p
-                  className="mt-6 text-[#e8dcc4]/70 text-sm font-light text-center"
-                  animate={{
-                    opacity: [0.5, 1, 0.5]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }}
-                >
+                <p className="mt-6 text-[#e8dcc4]/70 text-sm font-light text-center">
                   Scannez ce code à l{"'"}entrée
-                </motion.p>
+                </p>
 
                 <motion.button
                   onClick={handleDownloadQR}
                   className="mt-6 px-6 py-3 bg-[#c9a961] text-white font-medium rounded-xl flex items-center gap-2 transition-all duration-300 hover:shadow-xl"
-                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Download size={18} />
@@ -504,77 +322,241 @@ export default function PracticalInfoSection() {
 
               <div className="flex items-center justify-center gap-3 mt-4">
                 {[...Array(3)].map((_, i) => (
-                  <motion.div
-                    key={`qr-sparkle-${i}`}
-                    animate={{
-                      scale: [0, 1, 0],
-                      rotate: [0, 180]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: i * 0.3
-                    }}
-                  >
-                    <Sparkles size={16} className="text-[#c9a961]" />
-                  </motion.div>
+                  <Sparkles key={`qr-sparkle-${i}`} size={16} className="text-[#c9a961] opacity-60" />
                 ))}
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Section Cadeaux */}
+          <motion.div
+            className="lg:col-span-2"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="bg-[#3d5248]/60 backdrop-blur-sm rounded-3xl p-8 border-2 border-[#c9a961]/30 shadow-2xl hover:border-[#c9a961]/50 transition-all duration-300">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-[#c9a961] rounded-2xl flex items-center justify-center">
+                    <Gift size={32} className="text-white" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-medium text-[#e8dcc4] mb-1">
+                      Offrir un cadeau
+                    </h3>
+                    <p className="text-[#c9a961] font-light italic">
+                      Votre générosité nous touche
+                    </p>
+                  </div>
+                </div>
+                
+                {!showGiftForm && (
+                  <motion.button
+                    onClick={() => setShowGiftForm(true)}
+                    className="px-6 py-3 bg-[#c9a961] text-white font-medium rounded-xl flex items-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Plus size={20} />
+                    <span>Ajouter un cadeau</span>
+                  </motion.button>
+                )}
+              </div>
+
+              {/* Liste des cadeaux */}
+              {cadeaux.length > 0 && (
+                <div className="mb-6 space-y-4">
+                  {cadeaux.map((cadeau) => (
+                    <motion.div
+                      key={cadeau.id}
+                      className="bg-[#c9a961]/10 rounded-xl p-4 border border-[#c9a961]/20 flex items-center justify-between"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                    >
+                      <div>
+                        <p className="text-[#e8dcc4] font-medium">
+                          {getCategoryLabel(cadeau.categorie)}
+                        </p>
+                        {cadeau.appareilElectromenager && (
+                          <p className="text-[#e8dcc4]/70 text-sm">
+                            {getAppareilLabel(cadeau.appareilElectromenager)}
+                          </p>
+                        )}
+                        {cadeau.description && (
+                          <p className="text-[#e8dcc4]/70 text-sm">{cadeau.description}</p>
+                        )}
+                        {cadeau.montantEspeces && (
+                          <p className="text-[#c9a961] font-medium">{cadeau.montantEspeces} TND</p>
+                        )}
+                        {cadeau.notes && (
+                          <p className="text-[#e8dcc4]/50 text-xs mt-1 italic">{cadeau.notes}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => supprimerCadeau(cadeau.id)}
+                        className="text-[#e8dcc4]/50 hover:text-red-400 transition-colors"
+                      >
+                        <X size={20} />
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Formulaire d'ajout de cadeau */}
+              <AnimatePresence>
+                {showGiftForm && (
+                  <motion.form
+                    onSubmit={handleSubmitGift}
+                    className="space-y-6"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    {/* Catégorie */}
+                    <div>
+                      <label className="block text-[#e8dcc4] mb-2 font-light">
+                        Catégorie de cadeau *
+                      </label>
+                      <select
+                        value={giftForm.categorie}
+                        onChange={(e) => setGiftForm({ ...giftForm, categorie: e.target.value as CategorieCadeau | '' })}
+                        required
+                        className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961]"
+                      >
+                        <option value="">Sélectionnez une catégorie</option>
+                        {categories.map(cat => (
+                          <option key={cat.value} value={cat.value}>{cat.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Appareil électroménager */}
+                    {giftForm.categorie === CategorieCadeau.APPAREILS_ELECTROMENAGERS && (
+                      <div>
+                        <label className="block text-[#e8dcc4] mb-2 font-light">
+                          Type d{"'"}appareil *
+                        </label>
+                        <select
+                          value={giftForm.appareilElectromenager}
+                          onChange={(e) => setGiftForm({ ...giftForm, appareilElectromenager: e.target.value as AppareilElectromenager | '' })}
+                          required
+                          className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961]"
+                        >
+                          <option value="">Sélectionnez un appareil</option>
+                          {appareils.map(app => (
+                            <option key={app.value} value={app.value}>{app.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    {/* Description pour meubles et ustensiles */}
+                    {([CategorieCadeau.MEUBLES, CategorieCadeau.USTENSILES_CUISINE].includes(giftForm.categorie as CategorieCadeau)) && (
+                      <div>
+                        <label className="block text-[#e8dcc4] mb-2 font-light">
+                          Description *
+                        </label>
+                        <input
+                          type="text"
+                          value={giftForm.description}
+                          onChange={(e) => setGiftForm({ ...giftForm, description: e.target.value })}
+                          required
+                          placeholder="Décrivez votre cadeau"
+                          className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961] placeholder:text-[#e8dcc4]/30"
+                        />
+                      </div>
+                    )}
+
+                    {/* Montant pour dons en espèces */}
+                    {giftForm.categorie === CategorieCadeau.DONS_ESPECES && (
+                      <div>
+                        <label className="block text-[#e8dcc4] mb-2 font-light">
+                          Montant (TND) *
+                        </label>
+                        <input
+                          type="number"
+                          value={giftForm.montantEspeces}
+                          onChange={(e) => setGiftForm({ ...giftForm, montantEspeces: e.target.value })}
+                          required
+                          min="0"
+                          step="0.01"
+                          placeholder="0.00"
+                          className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961] placeholder:text-[#e8dcc4]/30"
+                        />
+                      </div>
+                    )}
+
+                    {/* Notes optionnelles */}
+                    <div>
+                      <label className="block text-[#e8dcc4] mb-2 font-light">
+                        Notes (optionnel)
+                      </label>
+                      <textarea
+                        value={giftForm.notes}
+                        onChange={(e) => setGiftForm({ ...giftForm, notes: e.target.value })}
+                        placeholder="Ajoutez une note personnelle..."
+                        rows={3}
+                        className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961] resize-none placeholder:text-[#e8dcc4]/30"
+                      />
+                    </div>
+
+                    {/* Boutons */}
+                    <div className="flex gap-4">
+                      <motion.button
+                        type="submit"
+                        disabled={isLoading}
+                        className="flex-1 py-3 bg-[#c9a961] text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl disabled:opacity-50"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {isLoading ? 'Ajout...' : 'Confirmer le cadeau'}
+                      </motion.button>
+                      <motion.button
+                        type="button"
+                        onClick={() => setShowGiftForm(false)}
+                        className="px-6 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 font-medium rounded-xl"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        Annuler
+                      </motion.button>
+                    </div>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+
+              {cadeaux.length === 0 && !showGiftForm && (
+                <div className="text-center py-12">
+                  <Gift size={48} className="text-[#c9a961]/30 mx-auto mb-4" />
+                  <p className="text-[#e8dcc4]/50 font-light">
+                    Aucun cadeau ajouté pour le moment
+                  </p>
+                </div>
+              )}
+            </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Decorative pattern dots */}
-      <motion.div
-        className="absolute top-1/3 left-8 opacity-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.5 }}
-      >
+      {/* Decorative dots */}
+      <div className="absolute top-1/3 left-8 opacity-20">
         <div className="grid grid-cols-3 gap-3">
           {[...Array(9)].map((_, i) => (
-            <motion.div
-              key={`dot-left-${i}`}
-              className="w-1.5 h-1.5 bg-[#c9a961] rounded-full"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: i * 0.2
-              }}
-            />
+            <div key={`dot-left-${i}`} className="w-1.5 h-1.5 bg-[#c9a961] rounded-full" />
           ))}
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        className="absolute bottom-1/4 right-8 opacity-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.7 }}
-      >
+      <div className="absolute bottom-1/4 right-8 opacity-20">
         <div className="grid grid-cols-3 gap-3">
           {[...Array(9)].map((_, i) => (
-            <motion.div
-              key={`dot-right-${i}`}
-              className="w-1.5 h-1.5 bg-[#c9a961] rounded-full"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: i * 0.2 + 0.5
-              }}
-            />
+            <div key={`dot-right-${i}`} className="w-1.5 h-1.5 bg-[#c9a961] rounded-full" />
           ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
