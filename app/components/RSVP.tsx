@@ -1,17 +1,29 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Mail, Check, Sparkles, UserCheck, UserX } from 'lucide-react';
+import { Heart, Mail, Check, Sparkles, UserCheck, UserX, AlertCircle } from 'lucide-react';
+import { useRSVP, useInviteInfo, useTable } from '@/hooks/useInvite';
+import { StatutConfirmation } from '@/types/invite.types';
 
 export default function RSVPSection() {
+  const { statut, confirmer, isLoading, isConfirmed, isDeclined, isPending } = useRSVP();
+  const { nomComplet, prenom } = useInviteInfo();
+  const { tableNumero, tableNom } = useTable();
+  
   const [selectedOption, setSelectedOption] = useState<'yes' | 'no' | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = () => {
-    if (selectedOption) {
-      setSubmitted(true);
+  // Synchroniser avec le statut existant au chargement
+  useEffect(() => {
+    if (statut) {
+      const option = statut === StatutConfirmation.OUI ? 'yes' : 
+                     statut === StatutConfirmation.NON ? 'no' : null;
+      setSelectedOption(option);
+      setSubmitted(statut !== StatutConfirmation.EN_ATTENTE);
     }
-  };
+  }, [statut]);
 
   // Sparkles positions
   const [sparklePositions] = useState(() =>
@@ -31,8 +43,42 @@ export default function RSVPSection() {
     }))
   );
 
+  const handleSubmit = async () => {
+    if (!selectedOption) return;
+    
+    setIsSubmitting(true);
+    setError(null);
+    
+    try {
+      const newStatut = selectedOption === 'yes' 
+        ? StatutConfirmation.OUI 
+        : StatutConfirmation.NON;
+      
+      await confirmer(newStatut);
+      setSubmitted(true);
+      
+      // Scroll smooth vers le message de confirmation
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.getElementById('rsvp-section')?.offsetTop || 0,
+          behavior: 'smooth'
+        });
+      }, 100);
+    } catch (err) {
+      setError('Une erreur est survenue. Veuillez réessayer.');
+      console.error('Erreur RSVP:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChangeResponse = () => {
+    setSubmitted(false);
+    // Garder la sélection actuelle pour permettre la modification
+  };
+
   return (
-    <div className="min-h-screen bg-[#f5f1e8] relative overflow-hidden py-20 px-6 font-['Montserrat']">
+    <div id="rsvp-section" className="min-h-screen bg-[#f5f1e8] relative overflow-hidden py-20 px-6 font-['Montserrat']">
       {/* Animated Background Orbs */}
       <motion.div
         className="absolute top-40 left-20 w-[400px] h-[400px] rounded-full blur-3xl opacity-30"
@@ -150,6 +196,32 @@ export default function RSVPSection() {
           >
             Confirmez votre présence
           </motion.h2>
+          
+          {/* Informations personnalisées */}
+          {prenom && (
+            <motion.p
+              className="text-2xl text-[#c9a961] font-light mb-2"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              Cher(e) {nomComplet}
+            </motion.p>
+          )}
+
+          {tableNumero && tableNom && (
+            <motion.p
+              className="text-lg text-[#34453D]/60 mb-4"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.35 }}
+            >
+              Table {tableNumero} • {tableNom}
+            </motion.p>
+          )}
+
           <motion.p
             className="text-lg md:text-xl text-[#34453D]/70 font-light max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
@@ -162,6 +234,18 @@ export default function RSVPSection() {
           </motion.p>
         </motion.div>
 
+        {/* Message d'erreur */}
+        {error && (
+          <motion.div
+            className="bg-red-500/10 border-2 border-red-500/30 rounded-2xl p-4 mb-6 flex items-center gap-3"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertCircle size={24} className="text-red-500 flex-shrink-0" />
+            <p className="text-red-700">{error}</p>
+          </motion.div>
+        )}
+
         {!submitted ? (
           <motion.div
             className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-[#c9a961]/20"
@@ -170,18 +254,38 @@ export default function RSVPSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
+            {/* Indicateur si déjà répondu */}
+            {selectedOption && !isSubmitting && (
+              <motion.div
+                className="mb-6 p-4 bg-[#c9a961]/10 border border-[#c9a961]/20 rounded-xl"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <p className="text-[#34453D] text-center">
+                  <span className="font-medium">Votre réponse actuelle :</span>{' '}
+                  {selectedOption === 'yes' ? (
+                    <span className="text-[#c9a961]">✓ Je serai présent(e)</span>
+                  ) : (
+                    <span className="text-[#34453D]/70">✗ Je ne pourrai pas venir</span>
+                  )}
+                  {' '}- Vous pouvez la modifier ci-dessous
+                </p>
+              </motion.div>
+            )}
+
             {/* RSVP Options */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               {/* Option: Je serai présent(e) */}
               <motion.button
                 onClick={() => setSelectedOption('yes')}
+                disabled={isLoading || isSubmitting}
                 className={`relative overflow-hidden rounded-2xl p-8 border-3 transition-all duration-300 ${
                   selectedOption === 'yes'
                     ? 'bg-[#c9a961] border-[#c9a961] shadow-xl'
                     : 'bg-[#34453D]/5 border-[#34453D]/20 hover:border-[#c9a961]/50'
-                }`}
-                whileHover={{ scale: 1.02, y: -4 }}
-                whileTap={{ scale: 0.98 }}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                whileHover={!isLoading && !isSubmitting ? { scale: 1.02, y: -4 } : {}}
+                whileTap={!isLoading && !isSubmitting ? { scale: 0.98 } : {}}
               >
                 {selectedOption === 'yes' && (
                   <motion.div
@@ -230,13 +334,14 @@ export default function RSVPSection() {
               {/* Option: Je ne pourrai pas venir */}
               <motion.button
                 onClick={() => setSelectedOption('no')}
+                disabled={isLoading || isSubmitting}
                 className={`relative overflow-hidden rounded-2xl p-8 border-3 transition-all duration-300 ${
                   selectedOption === 'no'
                     ? 'bg-[#34453D]/10 border-[#34453D] shadow-xl'
                     : 'bg-[#34453D]/5 border-[#34453D]/20 hover:border-[#34453D]/40'
-                }`}
-                whileHover={{ scale: 1.02, y: -4 }}
-                whileTap={{ scale: 0.98 }}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                whileHover={!isLoading && !isSubmitting ? { scale: 1.02, y: -4 } : {}}
+                whileTap={!isLoading && !isSubmitting ? { scale: 0.98 } : {}}
               >
                 <div className="relative z-10 flex flex-col items-center gap-4">
                   <motion.div
@@ -273,15 +378,15 @@ export default function RSVPSection() {
             {/* Submit Button */}
             <motion.button
               onClick={handleSubmit}
-              disabled={!selectedOption}
+              disabled={!selectedOption || isLoading || isSubmitting}
               className={`w-full py-5 rounded-full font-medium text-lg flex items-center justify-center gap-3 transition-all duration-300 ${
-                selectedOption
+                selectedOption && !isSubmitting
                   ? 'bg-[#c9a961] text-white hover:shadow-2xl cursor-pointer'
                   : 'bg-[#34453D]/10 text-[#34453D]/40 cursor-not-allowed'
               }`}
-              whileHover={selectedOption ? { scale: 1.02, y: -2 } : {}}
-              whileTap={selectedOption ? { scale: 0.98 } : {}}
-              animate={selectedOption ? {
+              whileHover={selectedOption && !isSubmitting ? { scale: 1.02, y: -2 } : {}}
+              whileTap={selectedOption && !isSubmitting ? { scale: 0.98 } : {}}
+              animate={selectedOption && !isSubmitting ? {
                 boxShadow: [
                   '0 10px 30px rgba(201, 169, 97, 0.2)',
                   '0 15px 40px rgba(201, 169, 97, 0.4)',
@@ -292,8 +397,25 @@ export default function RSVPSection() {
                 boxShadow: { duration: 2, repeat: Infinity }
               }}
             >
-              <Mail size={20} />
-              <span>Envoyer ma réponse</span>
+              {isSubmitting ? (
+                <>
+                  <motion.div
+                    className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  />
+                  <span>Envoi en cours...</span>
+                </>
+              ) : (
+                <>
+                  <Mail size={20} />
+                  <span>
+                    {statut === StatutConfirmation.EN_ATTENTE 
+                      ? 'Envoyer ma réponse' 
+                      : 'Mettre à jour ma réponse'}
+                  </span>
+                </>
+              )}
             </motion.button>
           </motion.div>
         ) : (
@@ -350,7 +472,7 @@ export default function RSVPSection() {
                 Merci pour votre confirmation !
               </motion.h3>
               <motion.p
-                className="text-xl text-[#34453D]/70 font-light"
+                className="text-xl text-[#34453D]/70 font-light mb-6"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -359,6 +481,18 @@ export default function RSVPSection() {
                   ? "Nous avons hâte de vous voir !"
                   : "Nous espérons vous voir une prochaine fois."}
               </motion.p>
+
+              {/* Bouton pour modifier la réponse */}
+              <motion.button
+                onClick={handleChangeResponse}
+                className="text-[#c9a961] hover:text-[#34453D] font-medium underline transition-colors"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                Modifier ma réponse
+              </motion.button>
 
               {/* Confetti Hearts */}
               {selectedOption === 'yes' && [...Array(12)].map((_, i) => (

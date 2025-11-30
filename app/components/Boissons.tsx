@@ -1,24 +1,87 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Sparkles, Check, Wine } from 'lucide-react';
+import { Heart, Sparkles, Check, Wine, Save, AlertCircle } from 'lucide-react';
+import { useBoissons, useInviteInfo } from '@/hooks/useInvite';
+import { TypeBoisson } from '@/types/invite.types';
 
 export default function DrinksSection() {
+  const { boissons, saveBoissonPreferences, isLoading } = useBoissons();
+  const { prenom, nomComplet } = useInviteInfo();
+  
   const [selectedDrinks, setSelectedDrinks] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const drinks = [
-    { id: 'coca', name: 'Coca-Cola', color: '#c9a961', icon: '🥤' },
-    { id: 'fanta', name: 'Fanta', color: '#c9a961', icon: '🍊' },
-    { id: 'boga', name: 'Boga', color: '#c9a961', icon: '🍋' },
-    { id: 'jus', name: 'Jus de Fruit', color: '#c9a961', icon: '🧃' }
+    { id: TypeBoisson.COCA_COLA, name: 'Coca-Cola', color: '#c9a961', icon: '🥤' },
+    { id: TypeBoisson.FANTA, name: 'Fanta', color: '#c9a961', icon: '🍊' },
+    { id: TypeBoisson.BOGA, name: 'Boga', color: '#c9a961', icon: '🍋' },
+    { id: TypeBoisson.JUS_DE_FRUIT, name: 'Jus de Fruit', color: '#c9a961', icon: '🧃' },
+    { id: TypeBoisson.CELESTIA, name: 'Celestia', color: '#c9a961', icon: '💧' }
   ];
 
+  // Charger les préférences existantes
+  useEffect(() => {
+    if (boissons && boissons.length > 0) {
+      const selected = boissons.map(b => b.boisson);
+      setSelectedDrinks(selected);
+    }
+  }, [boissons]);
+
   const toggleDrink = (drinkId: string) => {
-    setSelectedDrinks(prev =>
-      prev.includes(drinkId)
-        ? prev.filter(id => id !== drinkId)
-        : [...prev, drinkId]
-    );
+    setSelectedDrinks(prev => {
+      const isCurrentlySelected = prev.includes(drinkId);
+      
+      if (isCurrentlySelected) {
+        return prev.filter(id => id !== drinkId);
+      } else {
+        return [...prev, drinkId];
+      }
+    });
+    
+    // Réinitialiser le message de succès quand on modifie
+    setSaveSuccess(false);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setError(null);
+    setSaveSuccess(false);
+
+    try {
+      // Toutes les boissons ont une quantité de 1
+      const preferences = selectedDrinks.map(drinkId => ({
+        boisson: drinkId as TypeBoisson,
+        quantite: 1
+      }));
+
+      await saveBoissonPreferences(preferences);
+      setSaveSuccess(true);
+
+      // Cacher le message de succès après 3 secondes
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 3000);
+    } catch (err) {
+      setError('Erreur lors de la sauvegarde. Veuillez réessayer.');
+      console.error('Erreur sauvegarde boissons:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Vérifier si les préférences ont changé
+  const hasChanges = () => {
+    if (boissons.length !== selectedDrinks.length) return true;
+    
+    for (const drink of selectedDrinks) {
+      const existing = boissons.find(b => b.boisson === drink);
+      if (!existing) return true;
+    }
+    
+    return false;
   };
 
   // Sparkles positions
@@ -176,6 +239,18 @@ export default function DrinksSection() {
             Vos boissons préférées
           </motion.h2>
 
+          {prenom && (
+            <motion.p
+              className="text-xl text-[#c9a961] font-light mb-3"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              {prenom}, faites-nous savoir vos préférences
+            </motion.p>
+          )}
+
           <motion.p
             className="text-lg md:text-xl text-[#e8dcc4]/70 font-light max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
@@ -188,6 +263,29 @@ export default function DrinksSection() {
             <span className="text-[#c9a961] italic">Sélection multiple possible</span>
           </motion.p>
         </motion.div>
+
+        {/* Messages */}
+        {error && (
+          <motion.div
+            className="bg-red-500/10 border-2 border-red-500/30 rounded-2xl p-4 mb-6 flex items-center gap-3 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertCircle size={24} className="text-red-500 flex-shrink-0" />
+            <p className="text-red-300">{error}</p>
+          </motion.div>
+        )}
+
+        {saveSuccess && (
+          <motion.div
+            className="bg-green-500/10 border-2 border-green-500/30 rounded-2xl p-4 mb-6 flex items-center gap-3 max-w-2xl mx-auto"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <Check size={24} className="text-green-400 flex-shrink-0" />
+            <p className="text-green-300">Vos préférences ont été enregistrées avec succès !</p>
+          </motion.div>
+        )}
 
         {/* Drinks Grid */}
         <motion.div
@@ -204,10 +302,11 @@ export default function DrinksSection() {
               <motion.button
                 key={drink.id}
                 onClick={() => toggleDrink(drink.id)}
-                className={`relative overflow-hidden rounded-3xl p-8 border-2 transition-all duration-500 ${
+                disabled={isLoading || isSaving}
+                className={`relative overflow-hidden rounded-3xl p-8 border-2 transition-all duration-500 disabled:opacity-50 ${
                   isSelected
                     ? 'bg-[#c9a961] border-[#c9a961] shadow-2xl'
-                    : 'bg-[#3d5248]/40 backdrop-blur-sm border-[#c9a961]/30 hover:border-[#c9a961]/60 hover:bg-[#3d5248]/60'
+                    : 'bg-[#3d5248]/40 backdrop-blur-sm border-[#c9a961]/30'
                 }`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -313,9 +412,9 @@ export default function DrinksSection() {
           })}
         </motion.div>
 
-        {/* Selection Counter */}
+        {/* Selection Counter & Save Button */}
         <motion.div
-          className="text-center"
+          className="text-center space-y-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
@@ -350,6 +449,39 @@ export default function DrinksSection() {
               }
             </span>
           </motion.div>
+
+          {/* Save Button */}
+          {hasChanges() && (
+            <motion.button
+              onClick={handleSave}
+              disabled={selectedDrinks.length === 0 || isLoading || isSaving}
+              className={`px-8 py-4 rounded-full font-medium text-lg flex items-center justify-center gap-3 mx-auto transition-all duration-300 ${
+                selectedDrinks.length > 0 && !isSaving
+                  ? 'bg-[#c9a961] text-white hover:shadow-2xl'
+                  : 'bg-[#3d5248]/40 text-[#e8dcc4]/40 cursor-not-allowed'
+              }`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={selectedDrinks.length > 0 && !isSaving ? { scale: 1.05 } : {}}
+              whileTap={selectedDrinks.length > 0 && !isSaving ? { scale: 0.95 } : {}}
+            >
+              {isSaving ? (
+                <>
+                  <motion.div
+                    className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  />
+                  <span>Enregistrement...</span>
+                </>
+              ) : (
+                <>
+                  <Save size={20} />
+                  <span>Enregistrer mes préférences</span>
+                </>
+              )}
+            </motion.button>
+          )}
         </motion.div>
       </div>
 

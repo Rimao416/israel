@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "prisma:generate": "prisma generate",
+    "build": "pnpm prisma:generate && next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^6.12.0",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.548.0",
     "next": "16.0.0",
@@ -23,6 +25,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
+    "prisma": "6.12.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
