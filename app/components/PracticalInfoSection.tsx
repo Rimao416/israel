@@ -1,9 +1,17 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Sparkles, MapPin, Users, QrCode, Navigation } from 'lucide-react';
+import { Heart, Sparkles, MapPin, Users, QrCode, Navigation, Download } from 'lucide-react';
+import { useTable, useInviteInfo } from '@/hooks/useInvite';
+import QRCodeStyling from 'qr-code-styling';
+import { useEffect } from 'react';
 
 export default function PracticalInfoSection() {
+  const { table, tableNumero, tableNom } = useTable();
+  const { nomComplet } = useInviteInfo();
+  const qrRef = useRef<HTMLDivElement>(null);
+  const qrCodeRef = useRef<QRCodeStyling | null>(null);
+
   // Sparkles positions
   const [sparklePositions] = useState(() =>
     Array.from({ length: 20 }, () => ({
@@ -13,10 +21,54 @@ export default function PracticalInfoSection() {
     }))
   );
 
-  // QR Code pattern
-  const [qrPattern] = useState(() =>
-    Array.from({ length: 64 }, () => Math.random() > 0.5)
-  );
+  // Générer le QR Code avec l'ID de l'invité
+  useEffect(() => {
+    if (qrRef.current && !qrCodeRef.current) {
+      const inviteId = window.location.pathname.split('/').pop(); // Récupérer l'ID depuis l'URL
+      
+      qrCodeRef.current = new QRCodeStyling({
+        width: 250,
+        height: 250,
+        data: JSON.stringify({
+          inviteId,
+          type: 'wedding-confirmation',
+          timestamp: Date.now()
+        }),
+        image: '', // Tu peux ajouter un logo ici si tu veux
+        dotsOptions: {
+          color: "#34453D",
+          type: "rounded"
+        },
+        backgroundOptions: {
+          color: "#ffffff",
+        },
+        imageOptions: {
+          crossOrigin: "anonymous",
+          margin: 5
+        },
+        cornersSquareOptions: {
+          color: "#c9a961",
+          type: "extra-rounded"
+        },
+        cornersDotOptions: {
+          color: "#c9a961",
+          type: "dot"
+        }
+      });
+
+      qrCodeRef.current.append(qrRef.current);
+    }
+  }, []);
+
+  // Fonction pour télécharger le QR code
+  const handleDownloadQR = () => {
+    if (qrCodeRef.current) {
+      qrCodeRef.current.download({
+        name: `invitation-${nomComplet.replace(/\s+/g, '-')}`,
+        extension: "png"
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#34453D] relative overflow-hidden py-20 px-6 font-['Montserrat']">
@@ -334,26 +386,29 @@ export default function PracticalInfoSection() {
                   <div className="relative bg-[#c9a961] w-32 h-32 rounded-full flex items-center justify-center shadow-2xl">
                     <div className="text-center">
                       <p className="text-white/70 text-sm font-light mb-1">Table</p>
-                      <p className="text-white text-5xl font-light">1</p>
+                      <p className="text-white text-5xl font-light">{tableNumero || '?'}</p>
                     </div>
                   </div>
                 </motion.div>
-                <motion.div
-                  className="mt-8 bg-[#c9a961]/10 px-8 py-4 rounded-full border border-[#c9a961]/30"
-                  animate={{
-                    boxShadow: [
-                      '0 0 20px rgba(201, 169, 97, 0.2)',
-                      '0 0 30px rgba(201, 169, 97, 0.4)',
-                      '0 0 20px rgba(201, 169, 97, 0.2)',
-                    ]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }}
-                >
-                  <p className="text-[#e8dcc4] text-2xl font-light">Grace</p>
-                </motion.div>
+                
+                {tableNom && (
+                  <motion.div
+                    className="mt-8 bg-[#c9a961]/10 px-8 py-4 rounded-full border border-[#c9a961]/30"
+                    animate={{
+                      boxShadow: [
+                        '0 0 20px rgba(201, 169, 97, 0.2)',
+                        '0 0 30px rgba(201, 169, 97, 0.4)',
+                        '0 0 20px rgba(201, 169, 97, 0.2)',
+                      ]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity
+                    }}
+                  >
+                    <p className="text-[#e8dcc4] text-2xl font-light">{tableNom}</p>
+                  </motion.div>
+                )}
               </div>
 
               {/* Decorative hearts */}
@@ -419,20 +474,6 @@ export default function PracticalInfoSection() {
                 <motion.div
                   className="relative"
                   animate={{
-                    rotate: [0, 360]
-                  }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                >
-                  {/* Decorative border rotating */}
-                  <div className="absolute -inset-4 rounded-3xl border-2 border-[#c9a961]/30" />
-                </motion.div>
-                <motion.div
-                  className="relative bg-white p-6 rounded-2xl shadow-2xl"
-                  animate={{
                     boxShadow: [
                       '0 0 30px rgba(201, 169, 97, 0.3)',
                       '0 0 50px rgba(201, 169, 97, 0.5)',
@@ -444,21 +485,12 @@ export default function PracticalInfoSection() {
                     repeat: Infinity
                   }}
                 >
-                  {/* QR Code Placeholder - Replace with actual QR code */}
-                  <div className="w-48 h-48 bg-white flex items-center justify-center">
-                    <div className="grid grid-cols-8 gap-1">
-                      {qrPattern.map((isDark, i) => (
-                        <motion.div
-                          key={`qr-${i}`}
-                          className={`w-4 h-4 ${isDark ? 'bg-[#34453D]' : 'bg-white'}`}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: i * 0.01 }}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  <div 
+                    ref={qrRef} 
+                    className="bg-white p-4 rounded-2xl shadow-2xl"
+                  />
                 </motion.div>
+
                 <motion.p
                   className="mt-6 text-[#e8dcc4]/70 text-sm font-light text-center"
                   animate={{
@@ -471,6 +503,17 @@ export default function PracticalInfoSection() {
                 >
                   Scannez ce code à l{"'"}entrée
                 </motion.p>
+
+                {/* Download Button */}
+                <motion.button
+                  onClick={handleDownloadQR}
+                  className="mt-6 px-6 py-3 bg-[#c9a961] text-white font-medium rounded-xl flex items-center gap-2 transition-all duration-300 hover:shadow-xl"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Download size={18} />
+                  <span>Télécharger le QR Code</span>
+                </motion.button>
               </div>
 
               {/* Sparkles decoration */}
@@ -522,6 +565,7 @@ export default function PracticalInfoSection() {
           ))}
         </div>
       </motion.div>
+
       <motion.div
         className="absolute bottom-1/4 right-8 opacity-20"
         initial={{ opacity: 0 }}

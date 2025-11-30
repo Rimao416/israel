@@ -1,27 +1,37 @@
 "use client"
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Sparkles, Edit3, BookHeart } from 'lucide-react';
+import { Heart, Sparkles, Edit3, BookHeart, Loader2, Check } from 'lucide-react';
+import { useLivreOr } from '@/hooks/useInvite';
 
 export default function GuestbookSection() {
   const defaultMessage = "Toutes nos félicitations pour votre mariage ! Nous vous souhaitons tout le bonheur du monde et une vie remplie d'amour, de joie et de complicité. Que votre union soit bénie et que chaque jour soit une nouvelle célébration de votre amour.";
+ 
+  const { message: savedMessage, saveMessage, isLoading } = useLivreOr();
   
-  const [message, setMessage] = useState(defaultMessage);
   const [isEditing, setIsEditing] = useState(false);
-  const [tempMessage, setTempMessage] = useState(defaultMessage);
+  const [tempMessage, setTempMessage] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Le message affiché est soit savedMessage, soit le message par défaut
+  const displayMessage = savedMessage || defaultMessage;
 
   const handleEdit = () => {
-    setTempMessage(message);
+    setTempMessage(displayMessage);
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setMessage(tempMessage);
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (tempMessage.trim()) {
+      await saveMessage(tempMessage);
+      setIsEditing(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    }
   };
 
   const handleCancel = () => {
-    setTempMessage(message);
+    setTempMessage(displayMessage);
     setIsEditing(false);
   };
 
@@ -53,7 +63,6 @@ export default function GuestbookSection() {
           ease: "easeInOut"
         }}
       />
-
       <motion.div
         className="absolute bottom-40 right-32 w-[450px] h-[450px] rounded-full blur-3xl opacity-30"
         style={{
@@ -145,7 +154,6 @@ export default function GuestbookSection() {
           >
             <BookHeart size={56} className="text-[#c9a961]" strokeWidth={1.5} />
           </motion.div>
-
           <motion.h2
             className="text-4xl md:text-5xl lg:text-6xl font-light text-[#34453D] mb-4"
             initial={{ opacity: 0, y: 20 }}
@@ -155,7 +163,6 @@ export default function GuestbookSection() {
           >
             Livre d{"'"}Or
           </motion.h2>
-
           <motion.p
             className="text-lg md:text-xl text-[#34453D]/70 font-light max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
@@ -235,9 +242,24 @@ export default function GuestbookSection() {
                   >
                     <div className="mb-8">
                       <p className="text-[#34453D] text-lg leading-relaxed font-light whitespace-pre-wrap">
-                        {message}
+                        {displayMessage}
                       </p>
                     </div>
+                    
+                    {/* Success message */}
+                    <AnimatePresence>
+                      {showSuccess && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="mb-4 p-3 bg-green-100 text-green-800 rounded-xl flex items-center gap-2 justify-center"
+                        >
+                          <Check size={18} />
+                          <span className="text-sm font-medium">Message enregistré avec succès !</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     <motion.button
                       onClick={handleEdit}
@@ -275,6 +297,7 @@ export default function GuestbookSection() {
                         className="w-full h-64 p-6 bg-[#f5f1e8]/50 border-2 border-[#c9a961]/30 rounded-2xl text-[#34453D] text-lg font-light resize-none focus:outline-none focus:border-[#c9a961] transition-all duration-300"
                         placeholder="Écrivez votre message aux mariés..."
                         style={{ lineHeight: '1.8' }}
+                        disabled={isLoading}
                       />
                       <div className="flex items-center justify-between mt-2 px-2">
                         <span className="text-sm text-[#34453D]/50 font-light">
@@ -293,24 +316,34 @@ export default function GuestbookSection() {
                         </motion.div>
                       </div>
                     </div>
-
                     <div className="flex gap-4">
                       <motion.button
                         onClick={handleCancel}
-                        className="flex-1 py-4 bg-[#34453D]/10 text-[#34453D] font-medium rounded-2xl transition-all duration-300 hover:bg-[#34453D]/20"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        disabled={isLoading}
+                        className="flex-1 py-4 bg-[#34453D]/10 text-[#34453D] font-medium rounded-2xl transition-all duration-300 hover:bg-[#34453D]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={!isLoading ? { scale: 1.02 } : {}}
+                        whileTap={!isLoading ? { scale: 0.98 } : {}}
                       >
                         Annuler
                       </motion.button>
                       <motion.button
                         onClick={handleSave}
-                        className="flex-1 py-4 bg-[#c9a961] text-white font-medium rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 hover:shadow-xl"
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
+                        disabled={isLoading || !tempMessage.trim()}
+                        className="flex-1 py-4 bg-[#c9a961] text-white font-medium rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={!isLoading ? { scale: 1.02, y: -2 } : {}}
+                        whileTap={!isLoading ? { scale: 0.98 } : {}}
                       >
-                        <Heart size={18} fill="currentColor" />
-                        <span>Enregistrer</span>
+                        {isLoading ? (
+                          <>
+                            <Loader2 size={18} className="animate-spin" />
+                            <span>Enregistrement...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Heart size={18} fill="currentColor" />
+                            <span>Enregistrer</span>
+                          </>
+                        )}
                       </motion.button>
                     </div>
                   </motion.div>
