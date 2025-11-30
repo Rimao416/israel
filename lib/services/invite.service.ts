@@ -86,7 +86,7 @@ class InviteService {
    * Ajoute un cadeau
    */
   async addCadeau(id: string, cadeau: any): Promise<InviteComplet> {
-    const response = await fetch(`${this.baseUrl}/${id}/cadeaux`, {
+    const response = await fetch(`${this.baseUrl}/${id}/cadeau`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ class InviteService {
    * Supprime un cadeau
    */
   async deleteCadeau(inviteId: string, cadeauId: string): Promise<InviteComplet> {
-    const response = await fetch(`${this.baseUrl}/${inviteId}/cadeaux/${cadeauId}`, {
+    const response = await fetch(`${this.baseUrl}/${inviteId}/cadeau/${cadeauId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
