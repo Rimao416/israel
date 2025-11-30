@@ -11,12 +11,12 @@ export default function PracticalInfoSection() {
   const { nomComplet } = useInviteInfo();
   const { cadeaux, ajouterCadeau, supprimerCadeau, totalCadeaux, isLoading } = useCadeaux();
   
-  const qrRef = useRef(null);
-  const qrCodeRef = useRef(null);
+  const qrRef = useRef<HTMLDivElement>(null);
+  const qrCodeRef = useRef<QRCodeStyling | null>(null);
   const [showGiftForm, setShowGiftForm] = useState(false);
   const [giftForm, setGiftForm] = useState({
-    categorie: '',
-    appareilElectromenager: '',
+    categorie: '' as CategorieCadeau | '',
+    appareilElectromenager: '' as AppareilElectromenager | '',
     description: '',
     montantEspeces: '',
     notes: ''
@@ -83,24 +83,30 @@ export default function PracticalInfoSection() {
     }
   };
 
-  const handleSubmitGift = async (e) => {
+  const handleSubmitGift = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!giftForm.categorie) return;
 
-    const cadeauData = {
-      categorie: giftForm.categorie,
+    const cadeauData: {
+      categorie: CategorieCadeau;
+      appareilElectromenager?: AppareilElectromenager;
+      montantEspeces?: number;
+      description?: string;
+      notes?: string;
+    } = {
+      categorie: giftForm.categorie as CategorieCadeau,
     };
 
     if (giftForm.categorie === CategorieCadeau.APPAREILS_ELECTROMENAGERS && giftForm.appareilElectromenager) {
-      cadeauData.appareilElectromenager = giftForm.appareilElectromenager;
+      cadeauData.appareilElectromenager = giftForm.appareilElectromenager as AppareilElectromenager;
     }
 
     if (giftForm.categorie === CategorieCadeau.DONS_ESPECES && giftForm.montantEspeces) {
       cadeauData.montantEspeces = parseFloat(giftForm.montantEspeces);
     }
 
-    if ([CategorieCadeau.MEUBLES, CategorieCadeau.USTENSILES_CUISINE].includes(giftForm.categorie) && giftForm.description) {
+    if ([CategorieCadeau.MEUBLES, CategorieCadeau.USTENSILES_CUISINE].includes(giftForm.categorie as CategorieCadeau) && giftForm.description) {
       cadeauData.description = giftForm.description;
     }
 
@@ -120,11 +126,11 @@ export default function PracticalInfoSection() {
     setShowGiftForm(false);
   };
 
-  const getCategoryLabel = (categorie) => {
+  const getCategoryLabel = (categorie: CategorieCadeau) => {
     return categories.find(c => c.value === categorie)?.label || categorie;
   };
 
-  const getAppareilLabel = (appareil) => {
+  const getAppareilLabel = (appareil: AppareilElectromenager) => {
     return appareils.find(a => a.value === appareil)?.label || appareil;
   };
 
@@ -217,7 +223,7 @@ export default function PracticalInfoSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Tout ce qu'il vous faut savoir pour nous rejoindre
+            Tout ce qu&apos;il vous faut savoir pour nous rejoindre
             <br />
             <span className="text-[#c9a961] italic">Nous avons hâte de vous accueillir</span>
           </motion.p>
@@ -243,7 +249,7 @@ export default function PracticalInfoSection() {
                     Lieu de la réception
                   </h3>
                   <p className="text-[#c9a961] font-light italic">
-                    Où notre histoire s'écrira
+                    Où notre histoire s&apos;écrira
                   </p>
                 </div>
               </div>
@@ -276,7 +282,7 @@ export default function PracticalInfoSection() {
                 whileTap={{ scale: 0.98 }}
               >
                 <Navigation size={20} />
-                <span>Obtenir l'itinéraire sur Google Maps</span>
+                <span>Obtenir l&apos;itinéraire sur Google Maps</span>
               </motion.a>
             </div>
           </motion.div>
@@ -357,7 +363,7 @@ export default function PracticalInfoSection() {
                 />
                 
                 <p className="mt-6 text-[#e8dcc4]/70 text-sm font-light text-center">
-                  Scannez ce code à l'entrée
+                  Scannez ce code à l&apos;entrée
                 </p>
 
                 <motion.button
@@ -473,7 +479,7 @@ export default function PracticalInfoSection() {
                       </label>
                       <select
                         value={giftForm.categorie}
-                        onChange={(e) => setGiftForm({ ...giftForm, categorie: e.target.value })}
+                        onChange={(e) => setGiftForm({ ...giftForm, categorie: e.target.value as CategorieCadeau | '' })}
                         required
                         className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961]"
                       >
@@ -488,11 +494,11 @@ export default function PracticalInfoSection() {
                     {giftForm.categorie === CategorieCadeau.APPAREILS_ELECTROMENAGERS && (
                       <div>
                         <label className="block text-[#e8dcc4] mb-2 font-light">
-                          Type d'appareil *
+                          Type d&apos;appareil *
                         </label>
                         <select
                           value={giftForm.appareilElectromenager}
-                          onChange={(e) => setGiftForm({ ...giftForm, appareilElectromenager: e.target.value })}
+                          onChange={(e) => setGiftForm({ ...giftForm, appareilElectromenager: e.target.value as AppareilElectromenager | '' })}
                           required
                           className="w-full px-4 py-3 bg-[#34453D] text-[#e8dcc4] border border-[#c9a961]/30 rounded-xl focus:outline-none focus:border-[#c9a961]"
                         >
@@ -505,7 +511,7 @@ export default function PracticalInfoSection() {
                     )}
 
                     {/* Description pour meubles et ustensiles */}
-                    {([CategorieCadeau.MEUBLES, CategorieCadeau.USTENSILES_CUISINE].includes(giftForm.categorie)) && (
+                    {([CategorieCadeau.MEUBLES, CategorieCadeau.USTENSILES_CUISINE].includes(giftForm.categorie as CategorieCadeau)) && (
                       <div>
                         <label className="block text-[#e8dcc4] mb-2 font-light">
                           Description *
