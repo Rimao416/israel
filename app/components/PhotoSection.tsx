@@ -29,56 +29,57 @@ const SPARKLE_POSITIONS = Array.from({ length: 6 }, (_, i) => ({
 }));
 
 export default function PhotosSection() {
-  const photos: Photo[] = [
-    {
-      id: 1,
-      url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=400",
-      alt: "Couple enlacé",
-      rotation: -8,
-      delay: 0,
-      size: "large"
-    },
-    {
-      id: 2,
-      url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=400",
-      alt: "Moment tendre",
-      rotation: 5,
-      delay: 0.1,
-      size: "medium"
-    },
-    {
-      id: 3,
-      url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400",
-      alt: "Rires partagés",
-      rotation: -12,
-      delay: 0.2,
-      size: "large"
-    },
-    {
-      id: 4,
-      url: "https://images.unsplash.com/photo-1525772764200-be829a350797?w=400",
-      alt: "Complicité",
-      rotation: 10,
-      delay: 0.3,
-      size: "small"
-    },
-    {
-      id: 5,
-      url: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400",
-      alt: "Tendresse",
-      rotation: -6,
-      delay: 0.4,
-      size: "medium"
-    },
-    {
-      id: 6,
-      url: "https://images.unsplash.com/photo-1519741497674-611481863552?w=400",
-      alt: "Amour éternel",
-      rotation: 8,
-      delay: 0.5,
-      size: "large"
-    }
-  ];
+ const photos: Photo[] = [
+  {
+    id: 1,
+    url: "/couple_1.jpeg",
+    alt: "Couple enlacé",
+    rotation: -8,
+    delay: 0,
+    size: "large"
+  },
+  {
+    id: 2,
+    url: "/couple_2.jpeg",
+    alt: "Moment tendre",
+    rotation: 5,
+    delay: 0.1,
+    size: "medium"
+  },
+  {
+    id: 3,
+    url: "/couple_3.jpeg",
+    alt: "Rires partagés",
+    rotation: -12,
+    delay: 0.2,
+    size: "large"
+  },
+  {
+    id: 4,
+    url: "/couple_4.jpeg",
+    alt: "Complicité",
+    rotation: 10,
+    delay: 0.3,
+    size: "small"
+  },
+  {
+    id: 5,
+    url: "/couple_5.jpeg",
+    alt: "Tendresse",
+    rotation: -6,
+    delay: 0.4,
+    size: "medium"
+  },
+  {
+    id: 6,
+    url: "/main.jpeg",
+    alt: "Amour éternel",
+    rotation: 8,
+    delay: 0.5,
+    size: "large"
+  }
+];
+
 
   const getSizeClasses = (size: PhotoSize): string => {
     switch(size) {
