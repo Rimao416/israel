@@ -13,7 +13,7 @@ import { useParams } from 'next/navigation';
 import { useInvite } from '@/hooks/useInvite';
 
 export default function Hero() {
-      const params = useParams();
+  const params = useParams();
   const inviteId = params?.id as string;
   const [isLoading, setIsLoading] = useState(true);
   const { invite, isLoading: isLoadingInvite, error } = useInvite(inviteId);
@@ -23,13 +23,10 @@ export default function Hero() {
     { left: 20, top: 30, delay: 0 },
     { left: 80, top: 20, delay: 1 },
     { left: 50, top: 60, delay: 2 },
-    { left: 30, top: 80, delay: 0.5 },
-    { left: 70, top: 50, delay: 1.5 },
   ];
 
   const petalPositions = [
     { left: 25, xOffset: 100, duration: 15, delay: 0 },
-    { left: 50, xOffset: -80, duration: 18, delay: 2 },
     { left: 75, xOffset: 120, duration: 16, delay: 1 },
   ];
 
@@ -40,6 +37,8 @@ export default function Hero() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const nomComplet = invite ? `${invite.prenom} ${invite.nom}` : '';
 
   return (
     <>
@@ -84,13 +83,13 @@ export default function Hero() {
               }}
             />
 
-            {/* Floating hearts - réduit */}
-            {[0, 2, 4, 6].map((i) => (
+            {/* Floating hearts - minimal */}
+            {[0, 3].map((i) => (
               <motion.div
                 key={`preloader-heart-${i}`}
                 className="absolute text-[#c9a961]/20"
                 style={{
-                  left: `${15 + i * 20}%`,
+                  left: `${20 + i * 30}%`,
                   bottom: '-10%',
                 }}
                 animate={{
@@ -187,15 +186,15 @@ export default function Hero() {
                 ))}
               </motion.div>
 
-              {/* Sparkles - réduit */}
+              {/* Sparkles - minimal */}
               <div className="absolute inset-0 pointer-events-none">
-                {[0, 2, 4].map((i) => (
+                {[0, 2].map((i) => (
                   <motion.div
                     key={`sparkle-${i}`}
                     className="absolute text-[#c9a961]"
                     style={{
-                      left: `${30 + i * 20}%`,
-                      top: `${30 + i * 10}%`,
+                      left: `${30 + i * 30}%`,
+                      top: `${30 + i * 20}%`,
                     }}
                     animate={{
                       scale: [0, 1, 0],
@@ -260,13 +259,13 @@ export default function Hero() {
             }}
           />
 
-          {/* Floating Hearts Animation - réduit */}
-          {[0, 2, 4].map((i) => (
+          {/* Floating Hearts Animation - minimal */}
+          {[0, 2].map((i) => (
             <motion.div
               key={`heart-${i}`}
               className="absolute text-[#c9a961]/20"
               style={{
-                left: `${20 + i * 30}%`,
+                left: `${25 + i * 40}%`,
                 bottom: '-10%',
               }}
               animate={{
@@ -286,7 +285,7 @@ export default function Hero() {
             </motion.div>
           ))}
 
-          {/* Sparkles Animation - réduit */}
+          {/* Sparkles Animation - minimal */}
           {sparklePositions.map((pos, i) => (
             <motion.div
               key={`sparkle-${i}`}
@@ -311,7 +310,7 @@ export default function Hero() {
             </motion.div>
           ))}
 
-          {/* Floating Petals - réduit */}
+          {/* Floating Petals - minimal */}
           {petalPositions.map((pos, i) => (
             <motion.div
               key={`petal-${i}`}
@@ -346,6 +345,20 @@ export default function Hero() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 1, delay: 0.4 }}
               >
+                {/* Message de bienvenue personnalisé */}
+                {invite && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                    className="mb-4"
+                  >
+                    <p className="text-[#c9a961] text-lg font-light">
+                      Bienvenue, {nomComplet}
+                    </p>
+                  </motion.div>
+                )}
+
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -358,40 +371,17 @@ export default function Hero() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 1, delay: 0.8 }}
                   >
-                    <motion.span
-                      animate={{
-                        textShadow: [
-                          '0 0 20px rgba(201, 169, 97, 0.3)',
-                          '0 0 30px rgba(201, 169, 97, 0.5)',
-                          '0 0 20px rgba(201, 169, 97, 0.3)'
-                        ]
-                      }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                    >
-                      Israël
-                    </motion.span>
+                    <span>Israël</span>
                     <motion.span
                       className="text-[#c9a961]"
                       animate={{
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 5, -5, 0]
+                        scale: [1, 1.1, 1],
                       }}
                       transition={{ duration: 4, repeat: Infinity }}
                     >
                       <Heart size={28} fill="currentColor" className="inline-block" />
                     </motion.span>
-                    <motion.span
-                      animate={{
-                        textShadow: [
-                          '0 0 20px rgba(201, 169, 97, 0.3)',
-                          '0 0 30px rgba(201, 169, 97, 0.5)',
-                          '0 0 20px rgba(201, 169, 97, 0.3)'
-                        ]
-                      }}
-                      transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                    >
-                      Justesse
-                    </motion.span>
+                    <span>Justesse</span>
                   </motion.h1>
                   <motion.p
                     className="text-[#c9a961] text-xl lg:text-2xl font-light italic tracking-wide"
@@ -400,6 +390,14 @@ export default function Hero() {
                     transition={{ duration: 1, delay: 1.2 }}
                   >
                     Unissent leurs cœurs
+                  </motion.p>
+                  <motion.p
+                    className="text-[#e8dcc4] text-lg lg:text-xl font-light mt-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1, delay: 1.3 }}
+                  >
+                    04 Janvier 2026
                   </motion.p>
                 </motion.div>
 
@@ -504,7 +502,7 @@ export default function Hero() {
                 <motion.div
                   className="relative w-[380px] h-[520px]"
                   animate={{
-                    y: [0, -20, 0],
+                    y: [0, -15, 0],
                   }}
                   transition={{
                     y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
@@ -539,7 +537,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Decorative pattern dots - réduit */}
+          {/* Decorative pattern dots - minimal */}
           <motion.div
             className="absolute top-1/3 right-14 opacity-20"
             initial={{ opacity: 0 }}
@@ -547,13 +545,13 @@ export default function Hero() {
             transition={{ duration: 1, delay: 2 }}
           >
             <div className="grid grid-cols-3 gap-3">
-              {[...Array(9)].map((_, i) => (
+              {[...Array(6)].map((_, i) => (
                 <motion.div
                   key={`dot-${i}`}
                   className="w-1.5 h-1.5 bg-[#c9a961] rounded-full"
                   initial={{ scale: 0 }}
                   animate={{
-                    scale: [1, 1.5, 1],
+                    scale: [1, 1.3, 1],
                     opacity: [0.3, 1, 0.3]
                   }}
                   transition={{

@@ -98,7 +98,7 @@ export default function RSVPSection() {
 
           <p className="text-lg md:text-xl text-[#34453D]/70 font-light max-w-2xl mx-auto">
             Votre présence nous ferait un immense plaisir. Merci de confirmer avant le{' '}
-            <span className="text-[#c9a961] font-medium">11 octobre 2025</span>
+            <span className="text-[#c9a961] font-medium">01 Janvier 2025</span>
           </p>
         </div>
 
